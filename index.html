@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Herramienta Profesional de Cálculo de Hornos v7.1 (Final)</title>
+    <title>Herramienta Profesional de Cálculo de Hornos v7.2</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
@@ -79,7 +79,7 @@
 <body>
     <div class="container">
         <header class="header">
-            <h1>🔧 Herramienta Profesional de Cálculo de Hornos v7.1</h1>
+            <h1>🔧 Herramienta Profesional de Cálculo de Hornos v7.2</h1>
             <p>Diseño paso a paso para sistemas de combustión de biomasa</p>
         </header>
         <div class="progress-bar">
@@ -106,7 +106,7 @@
                 <div id="resultados1" class="calculation-display" style="display:none;"></div>
                 <div class="buttons">
                     <button class="btn btn-secondary" disabled>← Anterior</button>
-                    <button class="btn btn-primary next-button-pulse" id="siguiente1" onclick="siguientePaso(2)" disabled>Siguiente →</button>
+                    <button class="btn btn-primary" id="siguiente1" onclick="siguientePaso(2)" disabled>Siguiente →</button>
                 </div>
             </div>
 
@@ -132,7 +132,7 @@
                 <div id="resultados3" class="calculation-display" style="display:none;"></div>
                 <div class="buttons">
                     <button class="btn btn-secondary" onclick="siguientePaso(2)">← Anterior</button>
-                    <button class="btn btn-primary" onclick="siguientePaso(4)">Continuar →</button>
+                    <button class="btn btn-primary next-button-pulse" onclick="siguientePaso(4)">Continuar →</button>
                 </div>
             </div>
 
@@ -182,7 +182,7 @@
                 <div id="resultados5" class="calculation-display" style="display:none;"></div>
                 <div class="buttons">
                     <button class="btn btn-secondary" onclick="siguientePaso(4)">← Anterior</button>
-                    <button class="btn btn-primary" id="siguiente5" onclick="siguientePaso(6)">Continuar con Diseño Geométrico →</button>
+                    <button class="btn btn-primary next-button-pulse" id="siguiente5" onclick="siguientePaso(6)">Continuar con Diseño Geométrico →</button>
                 </div>
             </div>
 
@@ -281,6 +281,7 @@
                 </div>`;
             document.getElementById('resultados1').style.display = 'block';
             document.getElementById('siguiente1').disabled = false;
+            document.getElementById('siguiente1').classList.add('next-button-pulse');
         }
 
         function calcularPaso2() {
@@ -605,4 +606,3 @@
     </script>
 </body>
 </html>
-}
