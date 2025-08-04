@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Herramienta Profesional de Cálculo de Hornos v6.2</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; color: #333; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+        .header { text-align: center; color: white; margin-bottom: 30px; }
+        .progress-bar { background: rgba(255,255,255,0.2); border-radius: 25px; height: 50px; margin: 20px 0; position: relative; overflow: hidden; }
+        .progress-fill { background: linear-gradient(90deg, #4CAF50, #45a049); height: 100%; border-radius: 25px; transition: width 0.5s ease; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; }
+        .step-card { background: white; border-radius: 15px; padding: 30px; margin: 20px 0; box-shadow: 0 10px 30px rgba(0,0,0,0.2); display: none; animation: slideIn 0.5s ease; }
+        .step-card.active { display: block; }
+        @keyframes slideIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .step-title { color: #4CAF50; font-size: 24px; margin-bottom: 20px; display: flex; align-items: center; }
+        .step-number { background: #4CAF50; color: white; min-width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 15px; font-weight: bold; }
+        .input-group { margin: 20px 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; align-items: end; }
+        .input-field { display: flex; flex-direction: column; }
+        label { font-weight: bold; margin-bottom: 5px; color: #555; }
+        label small { font-weight: normal; color: #777; display: block; margin-top: 3px; }
+        input, select { padding: 12px; border: 2px solid #ddd; border-radius: 8px; font-size: 16px; transition: border-color 0.3s; width: 100%; }
+        input:focus, select:focus { outline: none; border-color: #4CAF50; }
+        .calculation-display { background: #f0f8ff; border: 2px solid #4CAF50; border-radius: 10px; padding: 20px; margin: 15px 0; }
+        .result-highlight { background: #e8f5e8; padding: 15px; border-radius: 8px; margin: 10px 0; border-left: 4px solid #4CAF50; }
+        .objetivo-highlight { background: #e3f2fd; color: #0b5e9d; font-weight: bold; padding: 10px; border-radius: 8px; border-left: 4px solid #0b5e9d; }
+        .buttons { display: flex; justify-content: space-between; align-items: center; margin-top: 30px; gap: 15px; flex-wrap: wrap; }
+        .button-group { display: flex; gap: 10px; }
+        .btn { padding: 12px 24px; border: none; border-radius: 8px; font-size: 16px; cursor: pointer; transition: all 0.3s; font-weight: bold; }
+        .btn-primary { background: #4CAF50; color: white; }
+        .btn-primary:hover { background: #45a049; transform: translateY(-2px); }
+        .btn-secondary { background: #6c757d; color: white; }
+        .btn-secondary:hover { background: #5a6268; }
+        .btn:disabled { background: #ccc; cursor: not-allowed; transform: none; }
+        .formula-display { background: #fff3cd; border: 1px solid #ffeaa7; border-radius: 8px; padding: 15px; margin: 15px 0; font-family: 'Courier New', monospace; }
+        .final-report { background: white; color: #333; padding: 30px; border-radius: 15px; margin: 20px 0; border: 2px solid #4CAF50; }
+        .report-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .report-section { margin-bottom: 20px; padding: 15px; background: #f9f9f9; border-radius: 8px; border-left: 5px solid #667eea; }
+        .report-section.full-width { grid-column: 1 / -1; }
+        .report-section h3 { color: #764ba2; margin-top: 0; border-bottom: 2px solid #764ba2; padding-bottom: 5px; margin-bottom: 10px;}
+        .report-section ul { list-style-position: inside; padding-left: 0; }
+        .report-section .param { font-weight: bold; color: #333; }
+        .report-footer { margin-top: 30px; padding-top: 15px; border-top: 1px solid #ccc; text-align: center; font-size: 12px; color: #777; }
+        .warning { background: #fff3cd; border: 1px solid #ffeaa7; border-radius: 8px; padding: 15px; margin: 15px 0; color: #856404; }
+        .toggle-container { display: flex; align-items: center; gap: 10px; margin: 20px 0; }
+        #aletas-params-div { display: none; }
+        .page-footer { text-align: center; padding: 25px 20px; color: rgba(255, 255, 255, 0.8); margin-top: 40px; }
+        .page-footer a { color: white; text-decoration: none; font-weight: bold; transition: text-decoration 0.3s; }
+        .page-footer a:hover { text-decoration: underline; }
+        .page-footer svg { width: 20px; height: 20px; vertical-align: middle; margin-right: 8px; fill: currentColor; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔧 Herramienta Profesional de Cálculo de Hornos v6.2</h1>
+            <p>Diseño paso a paso para sistemas de combustión de biomasa</p>
+        </div>
+
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressBar">Paso 1 de 7</div>
+        </div>
+
+        <div class="step-card active" id="step1">
+            <div class="step-title"><div class="step-number">1</div>REQUERIMIENTOS TÉRMICOS Y DE BIOMASA</div>
+            <div class="input-group">
+                <div class="input-field"><label for="aireCFM">Aire de Proceso (CFM)</label><input type="number" id="aireCFM" value="700"></div>
+                <div class="input-field"><label for="tempAmbiente">Temperatura Ambiente (°C)</label><input type="number" id="tempAmbiente" value="15"></div>
+                <div class="input-field"><label for="tempSalida">Temperatura de Salida (°C)</label><input type="number" id="tempSalida" value="60"></div>
+            </div>
+             <div class="input-group">
+                <div class="input-field"><label for="biomassType">Tipo de Biomasa</label><select id="biomassType"><option value="18000">Cisco de Café (18,000 kJ/kg)</option><option value="17500">Cascarilla de Café (17,500 kJ/kg)</option><option value="15000">Cascarilla de Arroz (15,000 kJ/kg)</option><option value="19200">Bagazo de Caña (19,200 kJ/kg)</option><option value="20500">Residuos de Palma (20,500 kJ/kg)</option></select></div>
+                <div class="input-field"><label for="humedadBiomasa">Humedad Biomasa (%)</label><input type="number" id="humedadBiomasa" value="12"></div>
+                <div class="input-field"><label for="eficienciaHorno">Eficiencia del Horno (%)</label><input type="number" id="eficienciaHorno" value="85"></div>
+             </div>
+             <div class="input-group">
+                <div class="input-field"><label for="horasTrabajo">Horas de Trabajo</label><input type="number" id="horasTrabajo" value="32"></div>
+                <div class="input-field"><button class="btn btn-primary" onclick="calcularPaso1()">Calcular Requerimientos</button></div>
+             </div>
+            <div id="resultados1" class="calculation-display" style="display:none;"></div>
+            <div class="buttons">
+                <button class="btn btn-secondary" disabled>← Anterior</button>
+                <button class="btn btn-primary" id="siguiente1" onclick="siguientePaso(2)" disabled>Siguiente →</button>
+            </div>
+        </div>
+
+        <div class="step-card" id="step2">
+            <div class="step-title"><div class="step-number">2</div>BALANCE DE BIOMASA GENERADA VS REQUERIDA</div>
+            <div class="input-group">
+                <div class="input-field"><label for="cafeCapacidad">Entrada de Café Húmedo (kg)</label><input type="number" id="cafeCapacidad" value="262.5"></div>
+                <div class="input-field"><label for="porcentajeCisco">% Cisco del CPS Final</label><input type="number" id="porcentajeCisco" value="15" max="100"></div>
+                 <div class="input-field"><label for="volumenMaquina">Volumen Máquina (m³)</label><input type="number" id="volumenMaquina" step="0.1" value="15"></div>
+            </div>
+            <div id="resultados2" class="calculation-display" style="display:none;"></div>
+            <div class="buttons">
+                <button class="btn btn-secondary" onclick="siguientePaso(1)">← Anterior</button>
+                <div class="button-group">
+                    <button class="btn btn-secondary" onclick="calcularPaso2()">1. Calcular Balance</button>
+                    <button class="btn btn-primary" id="siguiente2" onclick="siguientePaso(3)" disabled>2. Siguiente →</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="step-card" id="step3">
+            <div class="step-title"><div class="step-number">3</div>AIRE DE COMBUSTIÓN (VENTILADOR SECUNDARIO)</div>
+            <div id="resultados3" class="calculation-display" style="display:none;"></div>
+            <div class="buttons">
+                <button class="btn btn-secondary" onclick="siguientePaso(2)">← Anterior</button>
+                <button class="btn btn-primary" onclick="siguientePaso(4)">Continuar →</button>
+            </div>
+        </div>
+
+        <div class="step-card" id="step4">
+            <div class="step-title"><div class="step-number">4</div>TRANSFERENCIA DE CALOR Y ÁREA REQUERIDA</div>
+            <div id="objetivoCalor" class="calculation-display" style="display:none;"></div>
+            <div class="input-group">
+                <div class="input-field"><label for="coeficienteH">Coeficiente h (W/m²K)</label><input type="number" id="coeficienteH" step="1" value="180"></div>
+                <div class="input-field"><label for="emissividad">Emisividad (ε)</label><input type="number" id="emissividad" step="0.01" value="0.8"></div>
+                <div class="input-field"><label for="tempSuperficie">Temp. Superficie (°C)</label><input type="number" id="tempSuperficie" value="600"></div>
+            </div>
+            <div class="input-group">
+                <div class="input-field"><label for="areaComun">Área de Transferencia (m²) - ITERAR</label><input type="number" id="areaComun" step="0.1" value="1.0"></div>
+                <div class="input-field"><button class="btn btn-primary" onclick="calcularTransferencia()">Calcular Transferencia</button></div>
+                <div class="input-field"><button class="btn btn-secondary" onclick="iterarArea()">Auto-Iterar Área</button></div>
+            </div>
+            <div id="resultados4" class="calculation-display" style="display:none;"></div>
+            <div class="buttons">
+                <button class="btn btn-secondary" onclick="siguientePaso(3)">← Anterior</button>
+                <button class="btn btn-primary" id="siguiente4" onclick="siguientePaso(5)" disabled>Continuar →</button>
+            </div>
+        </div>
+        
+        <div class="step-card" id="step5">
+            <div class="step-title"><div class="step-number">5</div>DISEÑO ÓPTIMO DE ALETAS (OPCIONAL)</div>
+            <div class="toggle-container">
+                <label for="usarAletas"><strong>Activar cálculo de aletas para aumentar el área de transferencia</strong></label>
+                <input type="checkbox" id="usarAletas" onchange="toggleAletas()" style="width: auto; height: 20px;">
+            </div>
+            <div id="aletas-params-div">
+                <div class="formula-display"><strong>Fórmula Longitud Mínima Efectiva:</strong> L_min = 2.65 × √(K×Ac / (h×P))</div>
+                <div class="input-group">
+                    <div class="input-field"><label for="aletaK">Conductividad Térmica (K) (W/mK)<small>Ej: Acero al Carbono ≈ 50</small></label><input type="number" id="aletaK" value="50"></div>
+                    <div class="input-field"><label for="aletaAc">Área Transversal (Ac) (mm²)<small>Ej: platina de 50x3mm = 150mm²</small></label><input type="number" id="aletaAc" value="150"></div>
+                </div>
+                 <div class="input-group">
+                    <div class="input-field"><label for="aletaH">Coeficiente de Transferencia (h) (W/m²K)<small>Aire forzado ≈ 100-200</small></label><input type="number" id="aletaH" value="120"></div>
+                    <div class="input-field">
+                        <label for="aletaP">Perímetro (P) (mm)<small>Ej: platina de 50x3mm, P=2*(50+3)=106</small></label>
+                        <input type="number" id="aletaP" value="106">
+                    </div>
+                </div>
+                 <div class="input-group">
+                    <div class="input-field"><button class="btn btn-primary" onclick="calcularDisenoAletas()">Calcular Longitud Mínima</button></div>
+                </div>
+            </div>
+            <div id="resultados5" class="calculation-display" style="display:none;"></div>
+            <div class="buttons">
+                <button class="btn btn-secondary" onclick="siguientePaso(4)">← Anterior</button>
+                <button class="btn btn-primary" id="siguiente5" onclick="siguientePaso(6)">Continuar con Diseño Geométrico →</button>
+            </div>
+        </div>
+
+        <div class="step-card" id="step6">
+            <div class="step-title"><div class="step-number">6</div>DISEÑO GEOMÉTRICO Y VALIDACIÓN FINAL</div>
+            <div class="input-group">
+                <div class="input-field"><h4>🔥 Cilindro Principal</h4><label for="radioPrincipal">Radio (m)</label><input type="number" id="radioPrincipal" step="0.01" value="0.15"><label for="alturaPrincipal">Altura (m)</label><input type="number" id="alturaPrincipal" step="0.01" value="1.0"></div>
+                <div class="input-field"><h4>🌪️ C. Ciclónico (Opcional)</h4><label for="radioCiclonico">Radio (m)</label><input type="number" id="radioCiclonico" step="0.01" value="0.0"><label for="alturaCiclonico">Altura (m)</label><input type="number" id="alturaCiclonico" step="0.01" value="0.8"></div>
+            </div>
+            <div id="disenoAletasDiv" style="display:none;">
+                <h4>FINS (Aletas)</h4>
+                <div class="input-group">
+                    <div class="input-field"><label for="numAletas">Número de Aletas</label><input type="number" id="numAletas" value="4"></div>
+                    <div class="input-field"><label for="largoAletas">Largo Aletas (m)</label><input type="number" id="largoAletas" step="0.01" value="0.6"></div>
+                    <div class="input-field"><label for="anchoAletas">Ancho Aletas (m)</label><input type="number" id="anchoAletas" step="0.01" value="0.05"></div>
+                </div>
+            </div>
+            <div class="input-field" style="margin-top: 20px;"><button class="btn btn-primary" onclick="calcularDisenoGeometrico()">Calcular Área Total y Validar</button></div>
+            <div id="resultados6" class="calculation-display" style="display:none;"></div>
+            <div class="buttons">
+                <button class="btn btn-secondary" onclick="siguientePaso(5)">← Anterior</button>
+                <button class="btn btn-primary" id="siguiente6" onclick="generarReporteFinal(); siguientePaso(7)" disabled>Finalizar y Generar Reporte →</button>
+            </div>
+        </div>
+
+        <div class="step-card" id="step7">
+            <div class="step-title"><div class="step-number">7</div>REPORTE FINAL DE DISEÑO</div>
+            <div class="final-report" id="reporteFinal"></div>
+            <div class="buttons">
+                <button class="btn btn-secondary" onclick="siguientePaso(6)">← Anterior</button>
+                <button class="btn btn-primary" onclick="descargarPDF()">📄 Descargar Reporte en PDF</button>
+                <button class="btn btn-primary" onclick="reiniciarCalculo()">🔄 Nuevo Cálculo (F5)</button>
+            </div>
+        </div>
+    </div>
+    
+    <footer class="page-footer">
+        <a href="https://github.com/Jonathan_jerez" target="_blank" rel="noopener noreferrer">
+            <svg viewBox="0 0 16 16" version="1.1" aria-hidden="true"><path fill-rule="evenodd" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"></path></svg>
+            Desarrollado por Jonathan Jerez (legend20021) | Ingeniero Mecánico
+        </a>
+    </footer>
+
+    <script>
+        window.jsPDF = window.jspdf.jsPDF;
+        let resultados = {};
+
+        function siguientePaso(paso) {
+            document.querySelectorAll('.step-card').forEach(card => card.classList.remove('active'));
+            document.getElementById(`step${paso}`).classList.add('active');
+            
+            if (paso === 3) {
+                calcularPaso3();
+            }
+
+            const titulos = ["Req. Térmicos", "Balance Biomasa", "Aire Combustión", "Área de Transferencia", "Diseño Aletas", "Diseño Geométrico", "Reporte Final"];
+            const progressBar = document.getElementById('progressBar');
+            progressBar.style.width = (paso / 7) * 100 + '%';
+            progressBar.textContent = `Paso ${paso} de 7: ${titulos[paso-1]}`;
+        }
+
+        function calcularPaso1() {
+            const aireCFM = parseFloat(document.getElementById('aireCFM').value);
+            const tempAmbiente = parseFloat(document.getElementById('tempAmbiente').value);
+            const tempSalida = parseFloat(document.getElementById('tempSalida').value);
+            const cpBiomasa = parseFloat(document.getElementById('biomassType').value);
+            const humedadBiomasa = parseFloat(document.getElementById('humedadBiomasa').value);
+            const eficienciaHorno = parseFloat(document.getElementById('eficienciaHorno').value);
+            const horasTrabajo = parseFloat(document.getElementById('horasTrabajo').value);
+
+            const m_aire = aireCFM * 0.00055;
+            const cp_aire = 1.05;
+            const deltaT = tempSalida - tempAmbiente;
+            
+            const Q_proceso = m_aire * cp_aire * deltaT;
+            const Q_horno_requerido = Q_proceso / (eficienciaHorno / 100);
+            const Q_horno_btu = Q_horno_requerido * 3412.14;
+            
+            const cpBiomasa_efectivo = cpBiomasa * (1 - humedadBiomasa / 100);
+            const m_cisco_total = (Q_horno_requerido * horasTrabajo * 3600) / cpBiomasa_efectivo;
+            const consumo_por_hora = m_cisco_total / horasTrabajo;
+            const consumo_por_minuto = consumo_por_hora / 60;
+
+            resultados.paso1 = { Q_proceso, Q_horno_requerido, Q_horno_btu, cpBiomasa_efectivo, m_cisco_total, consumo_por_hora, consumo_por_minuto, aireCFM, horasTrabajo, eficienciaHorno, humedadBiomasa, biomassType: {value: cpBiomasa, text: document.getElementById('biomassType').selectedOptions[0].text} };
+
+            document.getElementById('resultados1').innerHTML = `
+                <h4>📊 Resultados Termodinámicos:</h4>
+                <div class="result-highlight">
+                    <strong>Potencia Requerida del Horno: ${Q_horno_requerido.toFixed(2)} kW / ${Q_horno_btu.toLocaleString('en-US', {maximumFractionDigits:0})} BTU/hr</strong><br>
+                    <small>(Considerando ${eficienciaHorno}% de eficiencia para entregar ${Q_proceso.toFixed(2)} kW útiles al proceso)</small><br><br>
+                    <strong>Poder calorífico efectivo (Biomasa al ${humedadBiomasa}% hum.):</strong> ${cpBiomasa_efectivo.toFixed(0)} kJ/kg<br>
+                    <strong>Biomasa total necesaria para ${horasTrabajo}h:</strong> ${m_cisco_total.toFixed(1)} kg<br>
+                    <strong>Consumo de biomasa por hora:</strong> ${consumo_por_hora.toFixed(2)} kg/h
+                </div>`;
+            document.getElementById('resultados1').style.display = 'block';
+            document.getElementById('siguiente1').disabled = false;
+        }
+
+        function calcularPaso2() {
+            const cafeCapacidad = parseFloat(document.getElementById('cafeCapacidad').value);
+            const volumenMaquina = parseFloat(document.getElementById('volumenMaquina').value);
+            const porcentajeCisco = parseFloat(document.getElementById('porcentajeCisco').value);
+            
+            const cps_final = cafeCapacidad * 0.5;
+            const cisco_generado = cps_final * (porcentajeCisco / 100);
+            const cisco_total_req = resultados.paso1.m_cisco_total;
+            const cisco_a_comprar = Math.max(0, cisco_total_req - cisco_generado);
+            const porcentaje_cubierto = Math.min(100, (cisco_generado / cisco_total_req) * 100);
+            const porcentaje_a_comprar = 100 - porcentaje_cubierto;
+
+            resultados.paso2 = { cafeCapacidad, volumenMaquina, cisco_generado, cisco_a_comprar, porcentaje_a_comprar };
+
+            document.getElementById('resultados2').innerHTML = `
+                <h4>☕ Resultados del Balance de Biomasa:</h4>
+                <div class="result-highlight">
+                    <strong>Biomasa requerida por el horno:</strong> ${cisco_total_req.toFixed(1)} kg<br>
+                    <strong>Cisco generado en el proceso de secado:</strong> ${cisco_generado.toFixed(1)} kg<br>
+                    <strong>Porcentaje cubierto con cisco propio:</strong> ${porcentaje_cubierto.toFixed(1)}%<br>
+                    <strong style="color:${cisco_a_comprar > 0 ? 'red' : 'green'};">Biomasa que se necesita comprar: ${cisco_a_comprar.toFixed(1)} kg (${porcentaje_a_comprar > 0 ? porcentaje_a_comprar.toFixed(1) : '0'}%)</strong>
+                </div>`;
+            document.getElementById('resultados2').style.display = 'block';
+            document.getElementById('siguiente2').disabled = false;
+        }
+        
+        function calcularPaso3() {
+            const aire_requerido_kgmin = resultados.paso1.consumo_por_minuto * 20;
+            const aire_combustion_cfm = aire_requerido_kgmin * 32;
+            resultados.paso3 = { aire_combustion_cfm };
+            document.getElementById('resultados3').innerHTML = `
+                <h4>🔥 Resultados de Aire para Combustión:</h4>
+                <div class="result-highlight">
+                    <strong>Consumo de combustible:</strong> ${resultados.paso1.consumo_por_minuto.toFixed(3)} kg/min<br>
+                    <strong>Aire requerido para combustión:</strong> ${aire_requerido_kgmin.toFixed(2)} kg/min
+                </div>
+                <div class="warning">
+                    💡 Se recomienda un <strong>ventilador de combustión</strong> (secundario, no el de proceso) con una capacidad de al menos <strong>${aire_combustion_cfm.toFixed(1)} CFM</strong>.
+                </div>`;
+             document.getElementById('resultados3').style.display = 'block';
+        }
+
+        function calcularTransferencia() {
+            const h = parseFloat(document.getElementById('coeficienteH').value);
+            const emissividad = parseFloat(document.getElementById('emissividad').value);
+            const tempSuperficie = parseFloat(document.getElementById('tempSuperficie').value);
+            const areaComun = parseFloat(document.getElementById('areaComun').value);
+            
+            const deltaT = 45;
+            const sigma = 5.67e-8;
+            const tempSuperficieK = tempSuperficie + 273.15;
+            const tempAireK = 312.5 + 273.15;
+
+            const Q_conv = h * areaComun * deltaT;
+            const Q_rad = areaComun * emissividad * sigma * (Math.pow(tempSuperficieK, 4) - Math.pow(tempAireK, 4));
+            const Q_total = (Q_conv + Q_rad) / 1000;
+
+            resultados.paso4 = { areaComun, Q_total, Q_horno_requerido: resultados.paso1.Q_horno_requerido, tempSuperficie };
+            
+            const diferencia = Math.abs(Q_total - resultados.paso4.Q_horno_requerido);
+            const porcentajeError = (diferencia / resultados.paso4.Q_horno_requerido) * 100;
+            
+            document.getElementById('objetivoCalor').innerHTML = `🎯 <strong>OBJETIVO DE POTENCIA DEL HORNO:</strong> <span class="objetivo-highlight">${resultados.paso1.Q_horno_requerido.toFixed(2)} kW</span>`;
+            document.getElementById('objetivoCalor').style.display = 'block';
+
+            document.getElementById('resultados4').innerHTML = `
+                <h4>🌡️ Transferencia de Calor Calculada:</h4>
+                <div class="result-highlight">
+                    <strong>Q total transferido con ${areaComun.toFixed(2)} m²:</strong> ${Q_total.toFixed(2)} kW<br>
+                    <strong>Diferencia vs. Objetivo:</strong> ${diferencia.toFixed(2)} kW (${porcentajeError.toFixed(1)}%)
+                </div>
+                <div class="warning">
+                    ${porcentajeError > 5 ? `⚠️ AJUSTAR ÁREA: La diferencia es > 5%.` : `✅ VALIDADO: El área de transferencia es adecuada.`}
+                </div>`;
+            document.getElementById('resultados4').style.display = 'block';
+            if (porcentajeError <= 5) document.getElementById('siguiente4').disabled = false;
+        }
+
+        function iterarArea() {
+            const Q_requerido_W = resultados.paso1.Q_horno_requerido * 1000;
+            const h = parseFloat(document.getElementById('coeficienteH').value);
+            const emissividad = parseFloat(document.getElementById('emissividad').value);
+            const tempSuperficie = parseFloat(document.getElementById('tempSuperficie').value);
+            const deltaT = 45;
+            const sigma = 5.67e-8;
+            const tempSuperficieK = tempSuperficie + 273.15;
+            const tempAireK = 312.5 + 273.15;
+            let areaEstimada = Q_requerido_W / (h * deltaT + emissividad * sigma * (Math.pow(tempSuperficieK, 4) - Math.pow(tempAireK, 4)));
+            document.getElementById('areaComun').value = areaEstimada.toFixed(2);
+            calcularTransferencia();
+        }
+
+        function toggleAletas() {
+            const usarAletas = document.getElementById('usarAletas').checked;
+            document.getElementById('aletas-params-div').style.display = usarAletas ? 'block' : 'none';
+            document.getElementById('disenoAletasDiv').style.display = usarAletas ? 'block' : 'none';
+            if (!usarAletas) {
+                resultados.paso5 = { usarAletas: false };
+                document.getElementById('resultados5').style.display = 'none';
+            }
+        }
+        
+        function calcularDisenoAletas() {
+            const K = parseFloat(document.getElementById('aletaK').value);
+            const Ac_mm2 = parseFloat(document.getElementById('aletaAc').value);
+            const h = parseFloat(document.getElementById('aletaH').value);
+            const P_mm = parseFloat(document.getElementById('aletaP').value);
+            const Ac_m2 = Ac_mm2 / 1000000;
+            const P_m = P_mm / 1000;
+            const L_min = 2.65 * Math.sqrt((K * Ac_m2) / (h * P_m));
+            resultados.paso5 = { usarAletas: true, L_min };
+            document.getElementById('resultados5').innerHTML = `
+                <h4>📏 Resultados de Aleta Óptima:</h4>
+                <div class="result-highlight">
+                    <strong>Longitud mínima recomendada de aleta:</strong> ${(L_min * 100).toFixed(1)} cm
+                </div>`;
+            document.getElementById('resultados5').style.display = 'block';
+        }
+
+        function calcularDisenoGeometrico() {
+            const radioPrincipal = parseFloat(document.getElementById('radioPrincipal').value);
+            const alturaPrincipal = parseFloat(document.getElementById('alturaPrincipal').value);
+            const radioCiclonico = parseFloat(document.getElementById('radioCiclonico').value);
+            const alturaCiclonico = parseFloat(document.getElementById('alturaCiclonico').value);
+            const usarAletas = document.getElementById('usarAletas').checked;
+            const areaCilindroPrincipal = 2 * Math.PI * radioPrincipal * alturaPrincipal;
+            const areaCilindroCiclonico = radioCiclonico > 0 ? 2 * Math.PI * radioCiclonico * alturaCiclonico : 0;
+            let areaAletas = 0;
+            let numAletas=0, largoAletas=0, anchoAletas=0, validacionAletas = true, mensajeAletas = '';
+            if (usarAletas) {
+                numAletas = parseFloat(document.getElementById('numAletas').value);
+                largoAletas = parseFloat(document.getElementById('largoAletas').value);
+                anchoAletas = parseFloat(document.getElementById('anchoAletas').value);
+                areaAletas = numAletas * largoAletas * anchoAletas * 2;
+                if (resultados.paso5?.L_min && largoAletas < resultados.paso5.L_min) {
+                    validacionAletas = false;
+                    mensajeAletas = `❌ ADVERTENCIA: Largo de aletas (${(largoAletas*100).toFixed(1)} cm) es MENOR al mínimo recomendado (${(resultados.paso5.L_min*100).toFixed(1)} cm).`;
+                } else {
+                    mensajeAletas = `✅ OK: El largo de las aletas es adecuado.`;
+                }
+            }
+            const areaTotal = areaCilindroPrincipal + areaCilindroCiclonico + areaAletas;
+            const areaRequerida = resultados.paso4.areaComun;
+            const validacionArea = areaTotal >= areaRequerida;
+            resultados.paso6 = { radioPrincipal, alturaPrincipal, areaAletas, areaTotal, numAletas, largoAletas, anchoAletas, validacionArea, validacionAletas };
+            document.getElementById('resultados6').innerHTML = `
+                <h4>📐 Resultados del Diseño Geométrico:</h4>
+                <div class="result-highlight">
+                    <strong>ÁREA TOTAL DISEÑADA: ${areaTotal.toFixed(2)} m²</strong> (Requerida: ${areaRequerida.toFixed(2)} m²)
+                </div>
+                <div class="warning">
+                    <strong>Validación de Área:</strong> ${validacionArea ? `✅ CUMPLE` : `❌ INSUFICIENTE - Aumente las dimensiones.`}<br>
+                    ${usarAletas ? `<strong>Validación de Aletas:</strong> ${mensajeAletas}`: ''}
+                </div>`;
+            document.getElementById('resultados6').style.display = 'block';
+            if (validacionArea && validacionAletas) {
+                document.getElementById('siguiente6').disabled = false;
+            }
+        }
+
+        function generarReporteFinal() {
+            const r = resultados;
+            const heatFlux = r.paso1.Q_horno_requerido / r.paso6.areaTotal;
+            const relacionAspecto = r.paso6.alturaPrincipal / (r.paso6.radioPrincipal * 2);
+            const aporteAletas = r.paso6.areaAletas > 0 ? (r.paso6.areaAletas / r.paso6.areaTotal) * 100 : 0;
+
+            let recomendacionesHTML = `
+                <li>La relación altura/diámetro del horno es <strong>${relacionAspecto.toFixed(1)}</strong>. Valores entre 2 y 4 favorecen una buena circulación de gases y una combustión más estable.</li>
+                <li>El flujo de calor es de <strong>${heatFlux.toFixed(2)} kW/m²</strong>. Este valor es clave para seleccionar el espesor del acero y el tipo de aislamiento térmico. Un flujo muy alto puede requerir materiales más robustos.</li>
+                ${aporteAletas > 0 ? `<li>Las aletas aportan un <strong>${aporteAletas.toFixed(1)}%</strong> del área total de transferencia. Son un método efectivo para aumentar la transferencia sin alterar drásticamente el cuerpo principal del horno.</li>` : ''}
+                <li>Asegurar que el material del horno (acero al carbono/inoxidable) y el aislamiento (lana mineral/fibra cerámica) soporten la temperatura de operación (${r.paso4.tempSuperficie}°C) con un margen de seguridad.</li>
+                `;
+            if (r.paso2.cisco_a_comprar > 0) {
+                recomendacionesHTML += `<li>Dado que se debe adquirir un <strong>${r.paso2.porcentaje_a_comprar.toFixed(1)}%</strong> de la biomasa, es crucial asegurar proveedores locales con antelación para garantizar la operación continua del horno.</li>`;
+            }
+
+            document.getElementById('reporteFinal').innerHTML = `
+                <div class="report-grid">
+                    <div class="report-section full-width">
+                        <h3>📋 Especificaciones de la Biomasa Seleccionada</h3>
+                        <p><span class="param">Tipo:</span> ${r.paso1.biomassType.text.split('(')[0].trim()}</p>
+                        <p><span class="param">Poder Calorífico (Base):</span> ${r.paso1.biomassType.value.toLocaleString('es-CO')} kJ/kg</p>
+                        <p><span class="param">Humedad Ingresada:</span> ${r.paso1.humedadBiomasa}%</p>
+                        <p><span class="param">Poder Calorífico Efectivo de Trabajo:</span> <strong>${r.paso1.cpBiomasa_efectivo.toFixed(0).toLocaleString('es-CO')} kJ/kg</strong></p>
+                    </div>
+                     <div class="report-section full-width">
+                        <h3>🌡️ Especificaciones Térmicas Clave del Horno</h3>
+                        <p><span class="param">Potencia del Horno:</span> ${r.paso1.Q_horno_requerido.toFixed(2)} kW / <strong>${r.paso1.Q_horno_btu.toLocaleString('en-US', {maximumFractionDigits:0})} BTU/hr</strong></p>
+                        <p><span class="param">Eficiencia de Diseño:</span> ${r.paso1.eficienciaHorno}%</p>
+                        <p><span class="param">Temperatura de Superficie de Diseño:</span> ${r.paso4.tempSuperficie}°C</p>
+                        <p><span class="param">Flujo de Calor (Heat Flux):</span> ${heatFlux.toFixed(2)} kW/m²</p>
+                    </div>
+                    <div class="report-section full-width">
+                        <h3>⚙️ Parámetros de Fabricación</h3>
+                        <div class="report-grid">
+                            <div>
+                                <p><span class="param">Ventilador Proceso:</span> ${r.paso1.aireCFM} CFM</p>
+                                <p><span class="param">Ventilador Combustión:</span> ${r.paso3.aire_combustion_cfm.toFixed(1)} CFM</p>
+                                <p><span class="param">Área de Transferencia Total:</span> ${r.paso6.areaTotal.toFixed(2)} m²</p>
+                            </div>
+                            <div>
+                                <p><span class="param">Cilindro Principal:</span> Ø${(r.paso6.radioPrincipal * 2 * 100).toFixed(0)} cm × ${r.paso6.alturaPrincipal.toFixed(2)} m</p>
+                                ${r.paso5.usarAletas ? `<p><span class="param">Aletas:</span> ${r.paso6.numAletas} uds. de ${r.paso6.largoAletas.toFixed(2)}m x ${r.paso6.anchoAletas.toFixed(2)}m</p>` : '<p><span class="param">Aletas:</span> No diseñadas.</p>'}
+                                <p><span class="param">Material Sugerido:</span> Acero al carbono/inoxidable</p>
+                            </div>
+                        </div>
+                    </div>
+                     <div class="report-section full-width">
+                        <h3>⚠️ Recomendaciones de Diseño y Fabricación</h3>
+                         <ul>${recomendacionesHTML}</ul>
+                    </div>
+                </div>
+                <div class="report-footer">
+                    Herramienta desarrollada por Jonathan Jerez, Ingeniero Mecánico.
+                </div>
+                `;
+        }
+
+        function descargarPDF() {
+            const reporte = document.getElementById('reporteFinal');
+            const { jsPDF } = window.jspdf;
+            html2canvas(reporte, { scale: 2 }).then(canvas => {
+                const imgData = canvas.toDataURL('image/png');
+                const pdf = new jsPDF('p', 'mm', 'a4');
+                const pdfWidth = pdf.internal.pageSize.getWidth();
+                const imgProps= pdf.getImageProperties(imgData);
+                const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+                let heightLeft = pdfHeight;
+                let position = 10;
+                const pageMargin = 10;
+                const pageHeight = pdf.internal.pageSize.getHeight() - (2 * pageMargin);
+                const imgWidth = pdfWidth - (2 * pageMargin);
+                const pageRatio = imgWidth / pageHeight;
+                let finalImgHeight = pdfHeight > pageHeight ? pageHeight : pdfHeight;
+                
+                pdf.addImage(imgData, 'PNG', pageMargin, position, imgWidth, pdfHeight);
+                heightLeft -= pageHeight;
+
+                while (heightLeft > 0) {
+                    position = heightLeft - pdfHeight;
+                    pdf.addPage();
+                    pdf.addImage(imgData, 'PNG', pageMargin, position, imgWidth, pdfHeight);
+                    heightLeft -= pageHeight;
+                }
+
+                pdf.save(`Reporte-Horno-Biomasa-${new Date().toISOString().slice(0,10)}.pdf`);
+            });
+        }
+        
+        function reiniciarCalculo() {
+            // Esta función refresca la página completamente, como presionar F5.
+            // Es la forma más segura de evitar errores de estado al recalcular.
+            location.reload();
+        }
+    </script>
+</body>
+</html>
