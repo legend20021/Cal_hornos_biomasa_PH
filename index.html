@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Herramienta Profesional de Cálculo de Hornos v6.8</title>
+    <title>Herramienta Profesional de Cálculo de Hornos v6.9</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
@@ -47,7 +47,7 @@
         .report-section h3 { color: #764ba2; margin-top: 0; border-bottom: 2px solid #764ba2; padding-bottom: 5px; margin-bottom: 15px;}
         .report-section ul { list-style-position: inside; padding-left: 5px; }
         .report-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-        .report-table td { padding: 8px; border: 1px solid #ddd; }
+        .report-table td { padding: 8px; border: 1px solid #ddd; font-size: 14px; }
         .report-table td:first-child { font-weight: bold; background-color: #f9f9f9; width: 50%; }
         .report-footer { margin-top: 30px; padding-top: 15px; border-top: 1px solid #ccc; text-align: center; font-size: 12px; color: #777; }
         .warning { background: #fff3cd; border: 1px solid #ffeaa7; border-radius: 8px; padding: 15px; margin: 15px 0; color: #856404; }
@@ -61,7 +61,7 @@
             background-color: rgba(45, 52, 54, 0.65);
             -webkit-backdrop-filter: blur(5px);
             backdrop-filter: blur(5px);
-            padding: 10px 20px; /* Footer más delgado */
+            padding: 10px 20px;
             color: rgba(255, 255, 255, 0.9);
             text-align: center;
             border-top: 1px solid rgba(255, 255, 255, 0.2);
@@ -74,7 +74,7 @@
 <body>
     <div class="container">
         <header class="header">
-            <h1>🔧 Herramienta Profesional de Cálculo de Hornos v6.8</h1>
+            <h1>🔧 Herramienta Profesional de Cálculo de Hornos v6.9</h1>
             <p>Diseño paso a paso para sistemas de combustión de biomasa</p>
         </header>
         <div class="progress-bar">
@@ -263,7 +263,7 @@
             const consumo_por_hora = m_cisco_total / horasTrabajo;
             const consumo_por_minuto = consumo_por_hora / 60;
 
-            resultados.paso1 = { Q_proceso, Q_horno_requerido, Q_horno_btu, cpBiomasa_efectivo, m_cisco_total, consumo_por_hora, consumo_por_minuto, aireCFM, horasTrabajo, eficienciaHorno, humedadBiomasa, biomassType: {value: cpBiomasa, text: document.getElementById('biomassType').selectedOptions[0].text} };
+            resultados.paso1 = { m_aire, deltaT, Q_proceso, Q_horno_requerido, Q_horno_btu, cpBiomasa_efectivo, m_cisco_total, consumo_por_hora, consumo_por_minuto, aireCFM, horasTrabajo, eficienciaHorno, humedadBiomasa, biomassType: {value: cpBiomasa, text: document.getElementById('biomassType').selectedOptions[0].text} };
 
             document.getElementById('resultados1').innerHTML = `
                 <h4>📊 Resultados Termodinámicos:</h4>
@@ -437,7 +437,7 @@
             const areaTotal = areaCilindroPrincipal + areaCilindroCiclonico + areaAletas;
             const areaRequerida = resultados.paso4.areaComun;
             const validacionArea = areaTotal >= areaRequerida;
-            resultados.paso6 = { radioPrincipal, alturaPrincipal, areaAletas, areaTotal, numAletas, largoAletas, anchoAletas, validacionArea, validacionAletas };
+            resultados.paso6 = { radioPrincipal, alturaPrincipal, radioCiclonico, areaCilindroPrincipal, areaCilindroCiclonico, areaAletas, areaTotal, numAletas, largoAletas, anchoAletas, validacionArea, validacionAletas };
             
             let isDesignValid = validacionArea && validacionAletas;
             let validationMessageHTML = `
@@ -482,11 +482,11 @@
                 `;
             
             if (r.paso6.areaAletas <= 0) {
-                 recomendacionesHTML += `<li>Considere añadir aletas de transferencia de calor al diseño. Las aletas aumentan significativamente el área de contacto con el aire sin necesidad de agrandar el cuerpo principal del horno, mejorando la eficiencia térmica.</li>`;
+                 recomendacionesHTML += `<li><b>Considere añadir aletas:</b> Las aletas aumentan el área de contacto con el aire sin agrandar el horno, mejorando significativamente la eficiencia térmica.</li>`;
             }
 
             if (r.paso2.cisco_a_comprar > 0) {
-                recomendacionesHTML += `<li>Dado que se debe adquirir un <strong>${r.paso2.porcentaje_a_comprar.toFixed(1)}%</strong> de la biomasa, es crucial asegurar proveedores locales con antelación para garantizar la operación continua del horno.</li>`;
+                recomendacionesHTML += `<li>Dado que se debe adquirir un <strong>${r.paso2.porcentaje_a_comprar.toFixed(1)}%</strong> de la biomasa, es crucial asegurar proveedores locales con antelación.</li>`;
             }
 
             document.getElementById('reporteFinal').innerHTML = `
@@ -497,6 +497,7 @@
                         <tr><td>Tipo de Biomasa</td><td>${r.paso1.biomassType.text.split('(')[0].trim()}</td></tr>
                     </table>
                 </div>
+
                 <div class="report-section">
                     <h3>Especificaciones de Rendimiento Térmico</h3>
                     <table class="report-table">
@@ -506,34 +507,47 @@
                         <tr><td>Flujo de Calor (Heat Flux)</td><td>${heatFlux.toFixed(2)} kW/m²</td></tr>
                     </table>
                 </div>
-                <div class="report-section">
-                    <h3>Especificaciones de Consumo de Biomasa</h3>
-                     <table class="report-table">
-                        <tr><td>Poder Calorífico Efectivo</td><td><strong>${r.paso1.cpBiomasa_efectivo.toFixed(0).toLocaleString('es-CO')} kJ/kg</strong> (al ${r.paso1.humedadBiomasa}% hum.)</td></tr>
-                        <tr><td>Consumo de Biomasa</td><td>${r.paso1.consumo_por_hora.toFixed(2)} kg/h</td></tr>
-                        <tr><td>Total Requerido (${r.paso1.horasTrabajo}h)</td><td>${r.paso1.m_cisco_total.toFixed(1)} kg</td></tr>
-                        <tr><td>Biomasa Generada</td><td>${r.paso2.cisco_generado.toFixed(1)} kg</td></tr>
-                        <tr><td>Balance (Necesidad de Compra)</td><td><strong>${r.paso2.cisco_a_comprar.toFixed(1)} kg</strong></td></tr>
-                    </table>
-                </div>
+
                  <div class="report-section">
+                    <h3>Parámetros Clave de Operación</h3>
+                     <table class="report-table">
+                        <tr><td>Potencia Útil al Proceso</td><td>${r.paso1.Q_proceso.toFixed(2)} kW</td></tr>
+                        <tr><td>Flujo Másico de Aire</td><td>${r.paso1.m_aire.toFixed(3)} kg/s</td></tr>
+                        <tr><td>Incremento de Temperatura (ΔT)</td><td>${r.paso1.deltaT.toFixed(1)} °C</td></tr>
+                        <tr><td>Consumo de Biomasa</td><td>${r.paso1.consumo_por_hora.toFixed(2)} kg/h</td></tr>
+                     </table>
+                </div>
+
+                <div class="report-section">
                     <h3>Parámetros Constructivos y Geométricos</h3>
                      <table class="report-table">
                         <tr><td>Cilindro Principal</td><td>Ø${(r.paso6.radioPrincipal * 2 * 100).toFixed(0)} cm × ${r.paso6.alturaPrincipal.toFixed(2)} m</td></tr>
-                        <tr><td>Aletas</td><td>${(r.paso6.areaAletas > 0) ? `${r.paso6.numAletas} uds. de ${r.paso6.largoAletas.toFixed(2)}m x ${r.paso6.anchoAletas.toFixed(2)}m` : 'No utilizadas'}</td></tr>
+                        <tr><td>Área Cilindro Principal</td><td>${r.paso6.areaCilindroPrincipal.toFixed(2)} m²</td></tr>
+                        <tr><td>Área Filtro Ciclónico</td><td>${r.paso6.radioCiclonico > 0 ? `${r.paso6.areaCilindroCiclonico.toFixed(2)} m²` : 'No utilizado'}</td></tr>
+                        <tr><td>Aletas</td><td>${(r.paso6.areaAletas > 0) ? `${r.paso6.numAletas} uds. (${r.paso6.areaAletas.toFixed(2)} m²)` : 'No utilizadas'}</td></tr>
                         <tr><td>Área de Transferencia Total</td><td><strong>${r.paso6.areaTotal.toFixed(2)} m²</strong></td></tr>
                         <tr><td>Ventilador de Proceso</td><td>${r.paso1.aireCFM} CFM</td></tr>
                         <tr><td>Ventilador de Combustión</td><td>${r.paso3.aire_combustion_cfm.toFixed(1)} CFM</td></tr>
                      </table>
                 </div>
+
+                <div class="report-section">
+                    <h3>Materiales Sugeridos y Seguridad</h3>
+                     <table class="report-table">
+                        <tr><td>Material Estructural</td><td>Acero al Carbono (ej. ASTM A36)</td></tr>
+                        <tr><td>Zonas de Alta Temperatura</td><td>Acero Inoxidable (ej. 304 / 310)</td></tr>
+                        <tr><td>Aislamiento Térmico</td><td>Lana de Roca o Fibra Cerámica (2-4 pulgadas)</td></tr>
+                        <tr><td>Seguridad Esencial</td><td>Chimenea de altura adecuada, control de tiro (damper), puerta con sello hermético.</td></tr>
+                     </table>
+                </div>
+
                  <div class="report-section">
                     <h3>Recomendaciones de Diseño e Implementación</h3>
                      <ul>${recomendacionesHTML}</ul>
                 </div>
                 <div class="report-footer">
                     Herramienta desarrollada por Jonathan Jerez, Ingeniero Mecánico.
-                </div>
-                `;
+                </div>`;
         }
 
         function descargarPDF() {
