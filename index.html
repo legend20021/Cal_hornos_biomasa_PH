@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Herramienta Profesional de Cálculo de Hornos v9.3 (Penagos Edition)</title>
+    <title>Herramienta Profesional de Cálculo de Hornos v9.4 (Penagos Edition)</title>
     
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
     <meta http-equiv="Pragma" content="no-cache" />
@@ -154,6 +154,18 @@
         ::view-transition-new(*) { animation: wipe-in 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
         ::view-transition-old(*) { animation: none; }
 
+        /* --- STYLES FOR PDF RENDERING (Desktop View) --- */
+        .pdf-render-prep { width: 1200px !important; }
+        .pdf-render-prep .report-table,
+        .pdf-render-prep .report-table tbody,
+        .pdf-render-prep .report-table tr,
+        .pdf-render-prep .report-table td { display: table !important; }
+        .pdf-render-prep .report-table { width: 100% !important; border-collapse: collapse !important; }
+        .pdf-render-prep .report-table tr { display: table-row !important; }
+        .pdf-render-prep .report-table td { display: table-cell !important; text-align: left !important; float: none !important; }
+        .pdf-render-prep .report-table td::before { content: none !important; }
+        .pdf-render-prep .report-table td:first-child { width: 50% !important; }
+        
         /* --- RESPONSIVE DESIGN --- */
         @media (max-width: 768px) {
             .header h1 { font-size: 24px; }
@@ -720,25 +732,14 @@
             pdfButton.disabled = true;
             pdfButton.innerHTML = 'Generando PDF...';
 
-            const reporteOriginal = document.getElementById('reporteFinal');
+            const step7Card = document.getElementById('step7');
+            const reporte = document.getElementById('reporteFinal');
             const isLightMode = document.body.classList.contains('light-mode');
             
-            // Create a clone to render off-screen for PDF generation
-            const reporteClonado = reporteOriginal.cloneNode(true);
-            const offscreenContainer = document.createElement('div');
+            // Temporarily apply a class to the parent card to force desktop styles
+            step7Card.classList.add('pdf-render-prep');
             
-            // Style the container to be off-screen but with a fixed desktop width
-            offscreenContainer.style.position = 'absolute';
-            offscreenContainer.style.top = '-9999px';
-            offscreenContainer.style.left = '-9999px';
-            offscreenContainer.style.width = '1200px'; 
-            offscreenContainer.style.background = isLightMode ? '#ffffff' : '#1f2937';
-            offscreenContainer.style.padding = '20px';
-            
-            offscreenContainer.appendChild(reporteClonado);
-            document.body.appendChild(offscreenContainer);
-            
-            html2canvas(reporteClonado, { scale: 2, useCORS: true, backgroundColor: isLightMode ? '#ffffff' : '#1f2937' }).then(canvas => {
+            html2canvas(reporte, { scale: 2, useCORS: true, backgroundColor: isLightMode ? '#ffffff' : '#1f2937' }).then(canvas => {
                 const imgData = canvas.toDataURL('image/png');
                 const pdf = new jsPDF({ orientation: 'p', unit: 'mm', format: 'a4' });
                 const imgProps= pdf.getImageProperties(imgData);
@@ -759,11 +760,12 @@
                 console.error("Error al generar el PDF:", error);
                 alert("Ocurrió un error al generar el PDF.");
             }).finally(() => {
-                document.body.removeChild(offscreenContainer); // Clean up the cloned element
+                // ALWAYS remove the temporary class to restore responsive view
+                step7Card.classList.remove('pdf-render-prep');
                 pdfButton.innerHTML = '📄 Descargar Ficha en PDF';
                 pdfButton.disabled = false;
             });
         }
-    </script> 
+    </script>
 </body>
 </html>
