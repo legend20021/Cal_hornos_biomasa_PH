@@ -192,7 +192,7 @@
         <div class="login-box" id="loginBox">
             <img src="https://penagos.com/wp-content/uploads/2020/04/logo-2-300x129.png" alt="Logo Penagos" class="login-logo">
             <h1>Acceso al Sistema</h1>
-            <p>Herramienta de Diseño de Hornos v9.2</p>
+            <p>Herramienta de Diseño de Hornos v9.3</p>
             <form id="login-form">
                 <div class="login-field"><label for="username">Usuario</label><input type="text" id="username" placeholder="Ingrese su usuario" value="PENAGOS"></div>
                 <div class="login-field"><label for="password">Contraseña</label>
@@ -223,7 +223,7 @@
                     <button class="btn-logout" onclick="logout()">Cerrar Sesión</button>
                 </div>
                 <img src="https://penagos.com/wp-content/uploads/2020/04/logo-2-300x129.png" alt="Logo Penagos" class="header-logo">
-                <h1>🔧 Herramienta Profesional de Cálculo de Hornos v9.2</h1>
+                <h1>🔧 Herramienta Profesional de Cálculo de Hornos v9.3</h1>
                 <p>Diseño paso a paso para sistemas de combustión de biomasa</p>
             </header>
             <div class="progress-bar">
@@ -720,11 +720,25 @@
             pdfButton.disabled = true;
             pdfButton.innerHTML = 'Generando PDF...';
 
-            const reporte = document.getElementById('reporteFinal');
-            const { jsPDF } = window.jspdf;
+            const reporteOriginal = document.getElementById('reporteFinal');
             const isLightMode = document.body.classList.contains('light-mode');
             
-            html2canvas(reporte, { scale: 2, useCORS: true, backgroundColor: isLightMode ? '#ffffff' : '#1f2937' }).then(canvas => {
+            // Create a clone to render off-screen for PDF generation
+            const reporteClonado = reporteOriginal.cloneNode(true);
+            const offscreenContainer = document.createElement('div');
+            
+            // Style the container to be off-screen but with a fixed desktop width
+            offscreenContainer.style.position = 'absolute';
+            offscreenContainer.style.top = '-9999px';
+            offscreenContainer.style.left = '-9999px';
+            offscreenContainer.style.width = '1200px'; 
+            offscreenContainer.style.background = isLightMode ? '#ffffff' : '#1f2937';
+            offscreenContainer.style.padding = '20px';
+            
+            offscreenContainer.appendChild(reporteClonado);
+            document.body.appendChild(offscreenContainer);
+            
+            html2canvas(reporteClonado, { scale: 2, useCORS: true, backgroundColor: isLightMode ? '#ffffff' : '#1f2937' }).then(canvas => {
                 const imgData = canvas.toDataURL('image/png');
                 const pdf = new jsPDF({ orientation: 'p', unit: 'mm', format: 'a4' });
                 const imgProps= pdf.getImageProperties(imgData);
@@ -741,11 +755,11 @@
                   heightLeft -= (pdf.internal.pageSize.getHeight() - 20);
                 }
                 pdf.save(`Ficha-Tecnica-Horno-${new Date().toISOString().slice(0,10)}.pdf`);
-                pdfButton.innerHTML = '📄 Descargar Ficha en PDF';
-                pdfButton.disabled = false;
             }).catch(error => {
                 console.error("Error al generar el PDF:", error);
                 alert("Ocurrió un error al generar el PDF.");
+            }).finally(() => {
+                document.body.removeChild(offscreenContainer); // Clean up the cloned element
                 pdfButton.innerHTML = '📄 Descargar Ficha en PDF';
                 pdfButton.disabled = false;
             });
