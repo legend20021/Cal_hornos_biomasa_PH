@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Herramienta Profesional de Cálculo de Hornos v9.0 (Penagos Edition)</title>
+    <title>Herramienta Profesional de Cálculo de Hornos v9.2 (Penagos Edition)</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Segoe+UI:wght@400;700&display=swap" rel="stylesheet">
@@ -13,7 +13,7 @@
         :root {
             --bg-dark: #111827; --bg-light: #f3f4f6;
             --text-dark: #E5E7EB; --text-light: #1f2937;
-            --card-bg-dark: rgba(31, 41, 55, 0.5); --card-bg-light: #ffffff; 
+            --card-bg-dark: rgba(31, 41, 55, 0.5); --card-bg-light: #ffffff;
             --border-dark: rgba(34, 211, 238, 0.3); --border-light: #d1d5db;
             --primary-dark: #22d3ee; --primary-light: #1d4ed8;
             --input-bg-dark: rgba(17, 24, 39, 0.8); --input-bg-light: #e5e7eb;
@@ -24,7 +24,8 @@
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: var(--bg-dark); color: var(--text-dark);
-            overflow: hidden;
+            overflow-x: hidden;
+            overflow-y: scroll;
         }
         
         /* --- CONTROLS & THEME BUTTON --- */
@@ -73,13 +74,12 @@
         body.light-mode .footer-right { color: #4b5563; }
         body.light-mode .btn-logout { background: #fca5a5; color: #7f1d1d; }
         body.light-mode .btn-logout:hover { background: #f87171; }
-        /* Light Mode Report Styles */
         body.light-mode .final-report { background: #fff; border: 1px solid #e5e7eb; }
         body.light-mode .report-section h3 { color: #1e3a8a; border-bottom-color: #93c5fd; }
-        body.light-mode .report-table td { border-color: #e5e7eb; color: #000; }
+        body.light-mode .report-table td { border-color: #e5e7eb; color: #111827; }
         body.light-mode .report-table td:first-child { background-color: var(--primary-light); color: #fff; }
         body.light-mode .report-footer { color: #6b7280; border-top-color: #e5e7eb; }
-        body.light-mode .report-section ul li { color: #111827; } /* Stronger text color for recommendations */
+        body.light-mode .report-section ul li { color: #111827; } 
         body.light-mode .report-section ul li::marker { color: var(--primary-light); }
         
         /* --- CORE STYLES --- */
@@ -97,10 +97,6 @@
         .login-button:hover { background: #fff; box-shadow: 0 0 25px var(--primary-dark); }
         .login-box.error-shake { animation: shake 0.5s; }
         @keyframes shake { 0%, 100% { transform: translateX(0); } 10%, 30%, 50%, 70%, 90% { transform: translateX(-10px); } 20%, 40%, 60%, 80% { transform: translateX(10px); } }
-        .particles { position: absolute; top: 0; left: 0; width: 100%; height: 100%; overflow: hidden; z-index: -1; }
-        .particles li { position: absolute; display: block; list-style: none; width: 20px; height: 20px; background: rgba(34, 211, 238, 0.2); animation: animate-particles 25s linear infinite; bottom: -150px; }
-        .particles li:nth-child(1){ left: 25%; width: 30px; height: 30px; animation-delay: 0s; } .particles li:nth-child(2){ left: 10%; width: 20px; height: 20px; animation-delay: 2s; animation-duration: 12s; } .particles li:nth-child(3){ left: 70%; width: 20px; height: 20px; animation-delay: 4s; } .particles li:nth-child(4){ left: 40%; width: 60px; height: 60px; animation-delay: 0s; animation-duration: 18s; } .particles li:nth-child(5){ left: 65%; width: 20px; height: 20px; animation-delay: 0s; } .particles li:nth-child(6){ left: 75%; width: 40px; height: 40px; animation-delay: 3s; } .particles li:nth-child(7){ left: 35%; width: 50px; height: 50px; animation-delay: 7s; } .particles li:nth-child(8){ left: 50%; width: 25px; height: 25px; animation-delay: 15s; animation-duration: 45s; } .particles li:nth-child(9){ left: 20%; width: 15px; height: 15px; animation-delay: 2s; animation-duration: 35s; } .particles li:nth-child(10){ left: 85%; width: 60px; height: 60px; animation-delay: 0s; animation-duration: 11s; }
-        @keyframes animate-particles { 0%{ transform: translateY(0) rotate(0deg); opacity: 1; border-radius: 0; } 100%{ transform: translateY(-1000px) rotate(720deg); opacity: 0; border-radius: 50%; } }
         .app-wrapper { opacity: 0; transform: translateY(20px); transition: opacity 0.5s 0.4s ease-out, transform 0.5s 0.4s ease-out; padding-bottom: 90px; }
         .app-wrapper.visible { opacity: 1; transform: translateY(0); }
         .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
@@ -124,7 +120,7 @@
         .calculation-display { background: #1f2937; border: 1px solid var(--border-dark); border-radius: 10px; padding: 20px; margin: 15px 0; }
         .result-highlight { background: #374151; padding: 15px; border-radius: 8px; margin: 10px 0; border-left: 4px solid var(--primary-dark); }
         .buttons { display: flex; justify-content: space-between; align-items: center; margin-top: 30px; gap: 15px; flex-wrap: wrap; }
-        .button-group { display: flex; gap: 10px; }
+        .button-group { display: flex; gap: 10px; flex-wrap: wrap; }
         .btn { padding: 12px 24px; border: none; border-radius: 8px; font-size: 16px; cursor: pointer; transition: all 0.3s; font-weight: bold; }
         .btn-primary { background: var(--primary-dark); color: #111827; }
         .btn-primary:hover { background: #fff; transform: translateY(-2px); box-shadow: 0 0 20px var(--primary-dark); }
@@ -152,6 +148,37 @@
         @keyframes wipe-in { from { clip-path: circle(0% at top left); } to { clip-path: circle(150% at top left); } }
         ::view-transition-new(*) { animation: wipe-in 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
         ::view-transition-old(*) { animation: none; }
+
+        /* --- RESPONSIVE DESIGN --- */
+        @media (max-width: 768px) {
+            .header h1 { font-size: 24px; }
+            .header p { font-size: 14px; }
+            .header-logo { margin-top: 50px; }
+            .step-title { font-size: 20px; flex-direction: column; align-items: flex-start; gap: 10px; }
+            .step-card, .login-box { padding: 20px; }
+            .container { padding: 10px; }
+            .buttons { justify-content: center; }
+            .page-footer { flex-direction: column; gap: 10px; padding: 10px; position: relative; }
+            .app-wrapper { padding-bottom: 120px; }
+            .progress-fill { font-size: 0; }
+
+            /* Responsive Report Table */
+            .report-table { border: 0; }
+            .report-table thead { display: none; }
+            .report-table tr { display: block; margin-bottom: 15px; border: 1px solid var(--border-light); border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+            body.light-mode .report-table tr { border-color: #e5e7eb; }
+            .report-table td { display: block; text-align: right; border: 0; border-bottom: 1px dotted #6b7280; padding: 10px; }
+            body.light-mode .report-table td { border-bottom: 1px dotted #d1d5db; }
+            .report-table td:last-child { border-bottom: 0; }
+            .report-table td:first-child { background-color: transparent !important; color: inherit !important; font-weight: normal; }
+            .report-table td::before {
+                content: attr(data-label);
+                float: left;
+                font-weight: bold;
+                margin-right: 10px;
+            }
+        }
+
     </style>
 </head>
 <body>
@@ -160,7 +187,7 @@
         <div class="login-box" id="loginBox">
             <img src="https://penagos.com/wp-content/uploads/2020/04/logo-2-300x129.png" alt="Logo Penagos" class="login-logo">
             <h1>Acceso al Sistema</h1>
-            <p>Herramienta de Diseño de Hornos v9.0</p>
+            <p>Herramienta de Diseño de Hornos v9.2</p>
             <form id="login-form">
                 <div class="login-field"><label for="username">Usuario</label><input type="text" id="username" placeholder="Ingrese su usuario" value="PENAGOS"></div>
                 <div class="login-field"><label for="password">Contraseña</label>
@@ -191,7 +218,7 @@
                     <button class="btn-logout" onclick="logout()">Cerrar Sesión</button>
                 </div>
                 <img src="https://penagos.com/wp-content/uploads/2020/04/logo-2-300x129.png" alt="Logo Penagos" class="header-logo">
-                <h1>🔧 Herramienta Profesional de Cálculo de Hornos v9.0</h1>
+                <h1>🔧 Herramienta Profesional de Cálculo de Hornos v9.2</h1>
                 <p>Diseño paso a paso para sistemas de combustión de biomasa</p>
             </header>
             <div class="progress-bar">
@@ -358,6 +385,8 @@
             </div>
     </footer>
 
+    <script data-name="BMC-Widget" data-cfasync="false" src="https://cdnjs.buymeacoffee.com/1.0.0/widget.prod.min.js" data-id="jonathanuis" data-description="Support me on Buy me a coffee!" data-message="" data-color="#FF5F5F" data-position="Right" data-x_margin="18" data-y_margin="85"></script>
+    
     <script>
         window.jsPDF = window.jspdf.jsPDF;
         let resultados = {};
@@ -652,8 +681,33 @@
             const aporteAletas = r.paso6.areaAletas > 0 ? (r.paso6.areaAletas / r.paso6.areaTotal) * 100 : 0;
 
             let recomendacionesHTML = `<li>La relación altura/diámetro del horno es <strong>${relacionAspecto.toFixed(1)}</strong>. Valores entre 2 y 4 favorecen una buena circulación de gases y una combustión más estable.</li><li>El flujo de calor es de <strong>${heatFlux.toFixed(2)} kW/m²</strong>. Este valor es clave para seleccionar el espesor del acero y el tipo de aislamiento térmico.</li>${aporteAletas > 0 ? `<li>Las aletas aportan un <strong>${aporteAletas.toFixed(1)}%</strong> del área total de transferencia. Son un método efectivo para optimizar el diseño.</li>` : ''}${(r.paso6.areaAletas <= 0) ? `<li><b>Considere añadir aletas:</b> Aumentan el área de contacto sin agrandar el horno, mejorando la eficiencia térmica.</li>` : ''}${(r.paso2.cisco_a_comprar > 0) ? `<li>Dado que se debe adquirir un <strong>${r.paso2.porcentaje_a_comprar.toFixed(1)}%</strong> de la biomasa, es crucial asegurar proveedores locales.</li>` : ''}`;
+            const tableData = [
+                [{label: "Fecha de Cálculo", value: new Date().toLocaleDateString('es-CO')}, {label: "Tipo de Biomasa", value: r.paso1.biomassType.text.split('(')[0].trim()}],
+                [{label: "Potencia del Horno", value: `<strong>${r.paso1.Q_horno_requerido.toFixed(2)} kW / ${r.paso1.Q_horno_btu.toLocaleString('en-US', {maximumFractionDigits:0})} BTU/hr</strong>`}, {label: "Eficiencia de Diseño", value: `${r.paso1.eficienciaHorno}%`}, {label: "Temperatura de Superficie", value: `${r.paso4.tempSuperficie}°C`}, {label: "Flujo de Calor (Heat Flux)", value: `${heatFlux.toFixed(2)} kW/m²`}],
+                [{label: "Potencia Útil al Proceso", value: `${r.paso1.Q_proceso.toFixed(2)} kW`}, {label: "Flujo Másico de Aire", value: `${r.paso1.m_aire.toFixed(3)} kg/s`}, {label: "Incremento de Temperatura (ΔT)", value: `${r.paso1.deltaT.toFixed(1)} °C`}, {label: "Consumo de Biomasa", value: `${r.paso1.consumo_por_hora.toFixed(2)} kg/h`}],
+                [{label: "Cilindro Principal", value: `Ø${(r.paso6.radioPrincipal_cm * 2).toFixed(0)} cm × ${r.paso6.alturaPrincipal_cm.toFixed(0)} cm`}, {label: "Área Cilindro Principal", value: `${r.paso6.areaCilindroPrincipal.toFixed(2)} m²`}, {label: "Filtro Ciclónico", value: r.paso6.radioCiclonico_cm > 0 ? `Ø${(r.paso6.radioCiclonico_cm * 2).toFixed(0)} cm × ${r.paso6.alturaCiclonico_cm.toFixed(0)} cm` : 'No utilizado'}, {label: "Área Filtro Ciclónico", value: r.paso6.radioCiclonico_cm > 0 ? `${r.paso6.areaCilindroCiclonico.toFixed(2)} m²` : 'No aplica'}, {label: "Aletas", value: (r.paso6.areaAletas > 0) ? `${r.paso6.numAletas} uds. de ${r.paso6.largoAletas_cm}x${r.paso6.anchoAletas_cm}cm (${r.paso6.areaAletas.toFixed(2)} m²)` : 'No utilizadas'}, {label: "Área de Transferencia Total", value: `<strong>${r.paso6.areaTotal.toFixed(2)} m²</strong>`}, {label: "Ventilador de Proceso", value: `${r.paso1.aireCFM} CFM`}, {label: "Ventilador de Combustión", value: `${r.paso3.aire_combustion_cfm.toFixed(1)} CFM`}],
+                [{label: "Material Estructural", value: r.paso6.materialName.split('(')[0].trim()}, {label: "Espesor de Lámina", value: `${r.paso6.materialThickness_mm} mm`}, {label: "Peso Total Estimado", value: `<strong>${r.paso6.materialWeight.toFixed(1)} kg</strong>`}, {label: "Costo Aprox. Material", value: `<strong>$${r.paso6.materialCost.toLocaleString('es-CO')} COP</strong>`}]
+            ];
+            const titles = ["FICHA TÉCNICA DE DISEÑO: Horno de Biomasa (Penagos)", "Especificaciones de Rendimiento Térmico", "Parámetros Clave de Operación", "Parámetros Constructivos y Geométricos", "Materiales, Peso y Costo", "Recomendaciones de Diseño e Implementación"];
+            
+            let reportHTML = '';
+            titles.forEach((title, index) => {
+                reportHTML += `<div class="report-section"><h3>${title}</h3>`;
+                if (index < tableData.length) {
+                    reportHTML += `<table class="report-table"><tbody>`;
+                    tableData[index].forEach(row => {
+                        reportHTML += `<tr><td data-label="${row.label}">${row.label}</td><td data-label="${row.label}">${row.value}</td></tr>`;
+                    });
+                    reportHTML += `</tbody></table>`;
+                }
+                if (index === titles.length - 1) { // Recommendations
+                    reportHTML += `<ul>${recomendacionesHTML}</ul>`;
+                }
+                reportHTML += `</div>`;
+            });
+             reportHTML += `<div class="report-footer">Herramienta desarrollada por Jonathan Jerez para Penagos Hermanos.</div>`;
 
-            document.getElementById('reporteFinal').innerHTML = `<div class="report-section"><h3>FICHA TÉCNICA DE DISEÑO: Horno de Biomasa (Penagos)</h3><table class="report-table"><tr><td>Fecha de Cálculo</td><td>${new Date().toLocaleDateString('es-CO')}</td></tr><tr><td>Tipo de Biomasa</td><td>${r.paso1.biomassType.text.split('(')[0].trim()}</td></tr></table></div><div class="report-section"><h3>Especificaciones de Rendimiento Térmico</h3><table class="report-table"><tr><td>Potencia del Horno</td><td><strong>${r.paso1.Q_horno_requerido.toFixed(2)} kW / ${r.paso1.Q_horno_btu.toLocaleString('en-US', {maximumFractionDigits:0})} BTU/hr</strong></td></tr><tr><td>Eficiencia de Diseño</td><td>${r.paso1.eficienciaHorno}%</td></tr><tr><td>Temperatura de Superficie</td><td>${r.paso4.tempSuperficie}°C</td></tr><tr><td>Flujo de Calor (Heat Flux)</td><td>${heatFlux.toFixed(2)} kW/m²</td></tr></table></div><div class="report-section"><h3>Parámetros Clave de Operación</h3><table class="report-table"><tr><td>Potencia Útil al Proceso</td><td>${r.paso1.Q_proceso.toFixed(2)} kW</td></tr><tr><td>Flujo Másico de Aire</td><td>${r.paso1.m_aire.toFixed(3)} kg/s</td></tr><tr><td>Incremento de Temperatura (ΔT)</td><td>${r.paso1.deltaT.toFixed(1)} °C</td></tr><tr><td>Consumo de Biomasa</td><td>${r.paso1.consumo_por_hora.toFixed(2)} kg/h</td></tr></table></div><div class="report-section"><h3>Parámetros Constructivos y Geométricos</h3><table class="report-table"><tr><td>Cilindro Principal</td><td>Ø${(r.paso6.radioPrincipal_cm * 2).toFixed(0)} cm × ${r.paso6.alturaPrincipal_cm.toFixed(0)} cm</td></tr><tr><td>Área Cilindro Principal</td><td>${r.paso6.areaCilindroPrincipal.toFixed(2)} m²</td></tr><tr><td>Filtro Ciclónico</td><td>${r.paso6.radioCiclonico_cm > 0 ? `Ø${(r.paso6.radioCiclonico_cm * 2).toFixed(0)} cm × ${r.paso6.alturaCiclonico_cm.toFixed(0)} cm` : 'No utilizado'}</td></tr><tr><td>Área Filtro Ciclónico</td><td>${r.paso6.radioCiclonico_cm > 0 ? `${r.paso6.areaCilindroCiclonico.toFixed(2)} m²` : 'No aplica'}</td></tr><tr><td>Aletas</td><td>${(r.paso6.areaAletas > 0) ? `${r.paso6.numAletas} uds. de ${r.paso6.largoAletas_cm}x${r.paso6.anchoAletas_cm}cm (${r.paso6.areaAletas.toFixed(2)} m²)` : 'No utilizadas'}</td></tr><tr><td>Área de Transferencia Total</td><td><strong>${r.paso6.areaTotal.toFixed(2)} m²</strong></td></tr><tr><td>Ventilador de Proceso</td><td>${r.paso1.aireCFM} CFM</td></tr><tr><td>Ventilador de Combustión</td><td>${r.paso3.aire_combustion_cfm.toFixed(1)} CFM</td></tr></table></div><div class="report-section"><h3>Materiales, Peso y Costo</h3><table class="report-table"><tr><td>Material Estructural</td><td>${r.paso6.materialName.split('(')[0].trim()}</td></tr><tr><td>Espesor de Lámina</td><td>${r.paso6.materialThickness_mm} mm</td></tr><tr><td>Peso Total Estimado</td><td><strong>${r.paso6.materialWeight.toFixed(1)} kg</strong></td></tr><tr><td>Costo Aprox. Material</td><td><strong>$${r.paso6.materialCost.toLocaleString('es-CO')} COP</strong></td></tr></table></div><div class="report-section"><h3>Recomendaciones de Diseño e Implementación</h3><ul>${recomendacionesHTML}</ul></div><div class="report-footer">Herramienta desarrollada por Jonathan Jerez para Penagos Hermanos.</div>`;
+            document.getElementById('reporteFinal').innerHTML = reportHTML;
         }
 
         function descargarPDF() {
