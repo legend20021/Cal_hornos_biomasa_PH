@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Herramienta Profesional de Cálculo de Hornos v8.3 (Elysium)</title>
+    <title>Herramienta Profesional de Cálculo de Hornos v8.4 (Penagos Edition)</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Segoe+UI:wght@400;700&display=swap" rel="stylesheet">
@@ -12,11 +12,11 @@
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         html { scroll-behavior: smooth; }
-        body { 
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-            background-color: #111827; /* Fondo base oscuro unificado */
-            color: #E5E7EB; /* Texto claro por defecto */
-            overflow: hidden; 
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #111827;
+            color: #E5E7EB;
+            overflow: hidden;
         }
 
         /* --- Estilos de la Pantalla de Login --- */
@@ -30,10 +30,11 @@
         .login-box {
             background: rgba(31, 41, 55, 0.5); border: 1px solid rgba(34, 211, 238, 0.3);
             padding: 40px; border-radius: 15px; -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
-            text-align: center; color: #fff; width: 90%; max-width: 400px;
+            text-align: center; color: #fff; width: 90%; max-width: 420px;
             animation: fadeInLogin 1s ease-out;
         }
         @keyframes fadeInLogin { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
+        .login-logo { max-width: 200px; margin-bottom: 20px; }
         .login-box h1 {
             font-family: 'Orbitron', sans-serif; font-size: 24px; margin-bottom: 10px;
             color: #22d3ee; text-shadow: 0 0 10px #22d3ee;
@@ -72,11 +73,12 @@
         .app-wrapper {
             opacity: 0; transform: translateY(20px);
             transition: opacity 0.5s 0.4s ease-out, transform 0.5s 0.4s ease-out;
-            padding-bottom: 70px;
+            padding-bottom: 90px; /* Aumentado para dejar espacio al footer */
         }
         .app-wrapper.visible { opacity: 1; transform: translateY(0); }
         .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
-        .header { text-align: center; color: white; margin: 20px 0; }
+        .header { text-align: center; color: white; margin: 20px 0; display: flex; flex-direction: column; align-items: center; gap: 15px; }
+        .header-logo { max-width: 250px; }
         .progress-bar { background: rgba(31, 41, 55, 0.5); border-radius: 25px; height: 50px; margin: 20px 0; position: relative; overflow: hidden; }
         .progress-fill { background: linear-gradient(90deg, #22d3ee, #00bfff); height: 100%; border-radius: 25px; transition: width 0.5s ease; display: flex; align-items: center; justify-content: center; color: #111827; font-weight: bold; }
         .step-card {
@@ -91,9 +93,10 @@
         .step-number { background: #22d3ee; color: #111827; min-width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 15px; font-weight: bold; }
         .input-group { margin: 20px 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; align-items: start; }
         .input-field { display: flex; flex-direction: column; }
+        .input-field h4 { color: #93c5fd; margin-bottom: 15px; padding-bottom: 5px; border-bottom: 1px solid #3b82f6; }
         label { font-weight: bold; margin-bottom: 5px; color: #d1d5db; }
         label small { font-weight: normal; color: #9ca3af; display: block; margin-top: 4px; line-height: 1.4; }
-        input, select { 
+        input, select {
             padding: 12px; border-radius: 8px; font-size: 16px; transition: all 0.3s; width: 100%;
             background: rgba(17, 24, 39, 0.8); color: #fff; border: 1px solid rgba(34, 211, 238, 0.4);
         }
@@ -112,7 +115,7 @@
         .next-button-pulse:not(:disabled) { animation: pulse 1.5s infinite; }
         @keyframes pulse { 0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(34, 211, 238, 0.7); } 70% { transform: scale(1.05); box-shadow: 0 0 0 10px rgba(34, 211, 238, 0); } 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(34, 211, 238, 0); } }
         .final-report { background: #1f2937; color: #e5e7eb; padding: 30px; border-radius: 15px; margin: 20px 0; border: 1px solid rgba(34, 211, 238, 0.3); }
-        .report-section h3 { color: #22d3ee; margin-top: 0; border-bottom: 2px solid #22d3ee; padding-bottom: 5px; margin-bottom: 15px;}
+        .report-section h3 { color: #22d3ee; margin-top: 20px; border-bottom: 2px solid #22d3ee; padding-bottom: 5px; margin-bottom: 15px;}
         .report-section ul { list-style-position: inside; padding-left: 5px; }
         .report-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
         .report-table td { padding: 8px; border: 1px solid #4b5563; font-size: 14px; }
@@ -121,14 +124,30 @@
         .warning { background: #3730a3; color: #e0e7ff; border: 1px solid #4f46e5; border-radius: 8px; padding: 15px; margin: 15px 0; }
         .toggle-container { display: flex; align-items: center; gap: 10px; margin: 20px 0; }
         #aletas-params-div { display: none; }
-        .page-footer { 
-            position: sticky; bottom: 0; width: 100%; z-index: 1000;
-            background-color: rgba(17, 24, 39, 0.65); -webkit-backdrop-filter: blur(5px); backdrop-filter: blur(5px);
-            padding: 10px 20px; color: rgba(229, 231, 235, 0.9); text-align: center; border-top: 1px solid rgba(34, 211, 238, 0.2);
+        .formula-display { background: #1e3a8a; color: #dbeafe; padding: 10px; border-radius: 8px; margin: 10px 0; font-family: monospace; }
+        
+        /* --- Estilos del Footer --- */
+        .page-footer {
+            position: fixed;
+            bottom: 0; left: 0; width: 100%; z-index: 1000;
+            background-color: rgba(17, 24, 39, 0.85);
+            -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);
+            padding: 15px 25px;
+            color: rgba(229, 231, 235, 0.8);
+            border-top: 1px solid rgba(34, 211, 238, 0.3);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 14px;
         }
-        .page-footer a { color: white; text-decoration: none; font-weight: bold; transition: text-decoration 0.3s; }
-        .page-footer a:hover { text-decoration: underline; }
-        .page-footer svg { width: 20px; height: 20px; vertical-align: middle; margin-right: 8px; fill: currentColor; }
+        .footer-left a {
+            color: #E5E7EB; text-decoration: none; font-weight: bold;
+            display: inline-flex; align-items: center; gap: 8px;
+            transition: color 0.3s;
+        }
+        .footer-left a:hover { color: #22d3ee; }
+        .footer-left svg { width: 22px; height: 22px; fill: currentColor; }
+        .footer-right { font-weight: bold; color: #9ca3af; }
     </style>
 </head>
 <body>
@@ -138,12 +157,13 @@
             <li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li>
         </ul>
         <div class="login-box" id="loginBox">
+            <img src="https://penagos.com/wp-content/uploads/2020/04/logo-2-300x129.png" alt="Logo Penagos" class="login-logo">
             <h1>Acceso al Sistema</h1>
-            <p>Herramienta de Diseño de Hornos v8.3</p>
+            <p>Herramienta de Diseño de Hornos v8.4</p>
             <form id="login-form">
                 <div class="login-field">
                     <label for="username">Usuario</label>
-                    <input type="text" id="username" placeholder="Ingrese su usuario">
+                    <input type="text" id="username" placeholder="Ingrese su usuario" value="PENAGOS">
                 </div>
                 <div class="login-field">
                     <label for="password">Contraseña</label>
@@ -157,7 +177,8 @@
     <div class="app-wrapper" id="appWrapper">
         <div class="container">
             <header class="header">
-                <h1>🔧 Herramienta Profesional de Cálculo de Hornos v8.3</h1>
+                 <img src="https://penagos.com/wp-content/uploads/2020/04/logo-2-300x129.png" alt="Logo Penagos" class="header-logo">
+                <h1>🔧 Herramienta Profesional de Cálculo de Hornos v8.4</h1>
                 <p>Diseño paso a paso para sistemas de combustión de biomasa</p>
             </header>
             <div class="progress-bar">
@@ -191,9 +212,9 @@
                 <div class="step-card" id="step2">
                     <div class="step-title"><div class="step-number">2</div>BALANCE DE BIOMASA GENERADA VS REQUERIDA</div>
                     <div class="input-group">
-                        <div class="input-field"><label for="cafeCapacidad">Entrada de Café Húmedo (kg)<small>Cantidad de producto a procesar.</small></label><input type="number" id="cafeCapacidad" value="262.5"></div>
+                        <div class="input-field"><label for="volumenMaquina">Volumen Máquina (m³)<small>Capacidad volumétrica del secador.</small></label><input type="number" id="volumenMaquina" step="0.1" value="1.5"></div>
+                        <div class="input-field"><label for="densidadCafe">Densidad Café Lavado (kg/m³)<small>Densidad aparente del café a secar.</small></label><input type="number" id="densidadCafe" step="1" value="350"></div>
                         <div class="input-field"><label for="porcentajeCisco">% Cisco del CPS Final<small>Porcentaje de residuo del producto seco.</small></label><input type="number" id="porcentajeCisco" value="15" max="100"></div>
-                         <div class="input-field"><label for="volumenMaquina">Volumen Máquina (m³)<small>Capacidad volumétrica del secador.</small></label><input type="number" id="volumenMaquina" step="0.1" value="15"></div>
                     </div>
                     <div id="resultados2" class="calculation-display" style="display:none;"></div>
                     <div class="buttons">
@@ -241,20 +262,17 @@
                         <input type="checkbox" id="usarAletas" onchange="toggleAletas()" style="width: auto; height: 20px;">
                     </div>
                     <div id="aletas-params-div">
-                        <div class="formula-display"><strong>Fórmula Longitud Mínima Efectiva:</strong> L_min = 2.65 × √(K×Ac / (h×P))</div>
+                        <div class="formula-display">L_min = 2.65 × √(K × Ac / (h × P))</div>
                         <div class="input-group">
-                            <div class="input-field"><label for="aletaK">Conductividad Térmica (K) (W/mK)<small>Ej: Acero al Carbono ≈ 50</small></label><input type="number" id="aletaK" value="50"></div>
-                            <div class="input-field"><label for="aletaAc">Área Transversal (Ac) (mm²)<small>Ej: platina de 50x3mm = 150mm²</small></label><input type="number" id="aletaAc" value="150"></div>
-                        </div>
-                         <div class="input-group">
+                            <div class="input-field"><label for="aletaK">Conductividad Térmica (K) del Material (W/mK)<small>Ej: Acero al Carbono ≈ 50</small></label><input type="number" id="aletaK" value="50"></div>
                             <div class="input-field"><label for="aletaH">Coeficiente h (W/m²K)<small>Típico para aire forzado: 100-200</small></label><input type="number" id="aletaH" value="120"></div>
-                            <div class="input-field">
-                                <label for="aletaP">Perímetro (P) (mm)<small>Ej: platina de 50x3mm, P=2*(50+3)=106</small></label>
-                                <input type="number" id="aletaP" value="106">
-                            </div>
                         </div>
                          <div class="input-group">
-                            <div class="input-field" style="justify-content: end;"><button class="btn btn-primary" onclick="calcularDisenoAletas()">Calcular Longitud Mínima</button></div>
+                            <div class="input-field"><label for="aletaAc">Área Transversal (Ac) de la Aleta (mm²)<small>Ej: platina de 50mm x 3mm = 150</small></label><input type="number" id="aletaAc" value="150"></div>
+                            <div class="input-field"><label for="aletaP">Perímetro (P) de la Aleta (mm)<small>Ej: platina 50x3mm, P=2*(50+3)=106</small></label><input type="number" id="aletaP" value="106"></div>
+                        </div>
+                         <div class="input-group">
+                            <div class="input-field" style="grid-column: 1 / -1; justify-content: center;"><button class="btn btn-primary" onclick="calcularDisenoAletas()">Calcular Longitud Mínima y Pre-llenar en Paso 6</button></div>
                         </div>
                     </div>
                     <div id="resultados5" class="calculation-display" style="display:none;"></div>
@@ -265,20 +283,33 @@
                 </div>
 
                 <div class="step-card" id="step6">
-                    <div class="step-title"><div class="step-number">6</div>DISEÑO GEOMÉTRICO Y VALIDACIÓN FINAL</div>
+                    <div class="step-title"><div class="step-number">6</div>DISEÑO GEOMÉTRICO, MATERIAL Y VALIDACIÓN</div>
+                    <div class="input-field"><h4>📐 Geometría del Horno</h4></div>
                     <div class="input-group">
-                        <div class="input-field"><h4>🔥 Cilindro Principal</h4><label for="radioPrincipal">Radio (m)<small>Radio externo del cilindro principal.</small></label><input type="number" id="radioPrincipal" step="0.01" value="0.15"><label for="alturaPrincipal">Altura (m)<small>Altura total del cilindro principal.</small></label><input type="number" id="alturaPrincipal" step="0.01" value="1.0"></div>
-                        <div class="input-field"><h4>🌪️ C. Ciclónico (Opcional)</h4><label for="radioCiclonico">Radio (m)<small>Dejar en 0 si no se utiliza.</small></label><input type="number" id="radioCiclonico" step="0.01" value="0.0"><label for="alturaCiclonico">Altura (m)<small>Altura del cilindro ciclónico.</small></label><input type="number" id="alturaCiclonico" step="0.01" value="0.8"></div>
+                        <div class="input-field"><h5>🔥 Cilindro Principal</h5><label for="radioPrincipal">Radio (m)<small>Radio externo del cilindro principal.</small></label><input type="number" id="radioPrincipal" step="0.01" value="0.15"><label for="alturaPrincipal">Altura (m)<small>Altura total del cilindro principal.</small></label><input type="number" id="alturaPrincipal" step="0.01" value="1.0"></div>
+                        <div class="input-field"><h5>🌪️ C. Ciclónico (Opcional)</h5><label for="radioCiclonico">Radio (m)<small>Dejar en 0 si no se utiliza.</small></label><input type="number" id="radioCiclonico" step="0.01" value="0.0"><label for="alturaCiclonico">Altura (m)<small>Altura del cilindro ciclónico.</small></label><input type="number" id="alturaCiclonico" step="0.01" value="0.8"></div>
                     </div>
                     <div id="disenoAletasDiv" style="display:none;">
-                        <h4>FINS (Aletas)</h4>
+                        <div class="input-field"><h4>➕ Aletas (Fins)</h4></div>
                         <div class="input-group">
                             <div class="input-field"><label for="numAletas">Número de Aletas<small>Cantidad total de aletas.</small></label><input type="number" id="numAletas" value="4"></div>
                             <div class="input-field"><label for="largoAletas">Largo Aletas (m)<small>Longitud de cada aleta.</small></label><input type="number" id="largoAletas" step="0.01" value="0.6"></div>
                             <div class="input-field"><label for="anchoAletas">Ancho Aletas (m)<small>Ancho (altura) de cada aleta.</small></label><input type="number" id="anchoAletas" step="0.01" value="0.05"></div>
                         </div>
                     </div>
-                    <div class="input-field" style="margin-top: 20px;"><button class="btn btn-primary" onclick="calcularDisenoGeometrico()">Calcular Área Total y Validar</button></div>
+                    <div class="input-field" style="margin-top: 20px;"><h4>🔩 Material y Costo Estimado</h4></div>
+                     <div class="input-group">
+                        <div class="input-field">
+                            <label for="materialType">Material Estructural<small>Seleccione el material principal.</small></label>
+                            <select id="materialType">
+                                <option value="7850">Acero al Carbono A36 (7850 kg/m³)</option>
+                                <option value="8000">Acero Inoxidable 304 (8000 kg/m³)</option>
+                            </select>
+                        </div>
+                        <div class="input-field"><label for="materialThickness">Espesor de Lámina (mm)<small>Calibre del material a usar.</small></label><input type="number" id="materialThickness" value="3"></div>
+                        <div class="input-field"><label for="materialPrice">Precio del Material ($/kg)<small>Costo por kilogramo del material.</small></label><input type="number" id="materialPrice" value="5000"></div>
+                     </div>
+                    <div class="input-field" style="margin-top: 20px;"><button class="btn btn-primary" onclick="calcularDisenoGeometrico()">Calcular Área, Peso, Costo y Validar</button></div>
                     <div id="resultados6" class="calculation-display" style="display:none;"></div>
                     <div class="buttons">
                         <button class="btn btn-secondary" onclick="siguientePaso(5)">← Anterior</button>
@@ -292,13 +323,25 @@
                     <div class="buttons">
                         <button class="btn btn-secondary" onclick="siguientePaso(6)">← Anterior</button>
                         <button class="btn btn-primary" id="pdfButton" onclick="descargarPDF()">📄 Descargar Ficha en PDF</button>
-                        <button class="btn btn-primary" onclick="reiniciarCalculo()">🔄 Nuevo Cálculo (F5)</button>
+                        <button class="btn btn-secondary" onclick="reiniciarCalculo()">🔄 Nuevo Cálculo</button>
                     </div>
                 </div>
             </main>
         </div>
     </div>
     
+    <footer class="page-footer">
+        <div class="footer-left">
+            <a href="https://github.com/legend20021" target="_blank" rel="noopener noreferrer">
+                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
+                <span>Desarrollado por Jonathan Jerez</span>
+            </a>
+        </div>
+        <div class="footer-right" id="copyright">
+            &copy; 2024 Penagos Hermanos. Todos los derechos reservados.
+        </div>
+    </footer>
+
     <script>
         // --- Lógica del Login y Transición ---
         document.addEventListener('DOMContentLoaded', () => {
@@ -307,9 +350,17 @@
             const appWrapper = document.getElementById('appWrapper');
             const loginBox = document.getElementById('loginBox');
             
-            // Contraseña correcta, ofuscada para no estar en texto plano.
-            // btoa('penagos123') = 'cGVuYWdvczEyMw=='
-            const storedObfuscatedPass = 'cGVuYWdvczEyMw==';
+            // Actualizar copyright
+            document.getElementById('copyright').innerHTML = `&copy; ${new Date().getFullYear()} Penagos Hermanos. Todos los derechos reservados.`;
+
+            // Verificar si el usuario ya está logueado en la sesión
+            if (sessionStorage.getItem('isLoggedIn') === 'true') {
+                loginOverlay.classList.add('hidden');
+                document.body.style.overflow = 'auto';
+                appWrapper.classList.add('visible');
+            }
+            
+            const storedObfuscatedPass = 'cGVuYWdvczEyMw=='; // btoa('penagos123')
 
             loginForm.addEventListener('submit', (e) => {
                 e.preventDefault();
@@ -318,6 +369,7 @@
                 const enteredObfuscatedPass = btoa(password);
 
                 if (username.toUpperCase() === 'PENAGOS' && enteredObfuscatedPass === storedObfuscatedPass) {
+                    sessionStorage.setItem('isLoggedIn', 'true'); // Guardar estado en sessionStorage
                     loginOverlay.classList.add('hidden');
                     document.body.style.overflow = 'auto';
                     appWrapper.classList.add('visible');
@@ -343,15 +395,14 @@
                 calcularPaso3();
             }
 
-            const titulos = ["Req. Térmicos", "Balance Biomasa", "Aire Combustión", "Área de Transferencia", "Diseño Aletas", "Diseño Geométrico", "Reporte Final"];
+            const titulos = ["Req. Térmicos", "Balance Biomasa", "Aire Combustión", "Área de Transferencia", "Diseño Aletas", "Diseño y Material", "Reporte Final"];
             const progressBar = document.getElementById('progressBar');
             progressBar.style.width = (paso / 7) * 100 + '%';
             progressBar.textContent = `Paso ${paso} de 7: ${titulos[paso-1]}`;
         }
 
         function calcularPaso1() {
-            // ... (resto del script sin cambios)
-             const aireCFM = parseFloat(document.getElementById('aireCFM').value);
+            const aireCFM = parseFloat(document.getElementById('aireCFM').value);
             const tempAmbiente = parseFloat(document.getElementById('tempAmbiente').value);
             const tempSalida = parseFloat(document.getElementById('tempSalida').value);
             const cpBiomasa = parseFloat(document.getElementById('biomassType').value);
@@ -388,10 +439,11 @@
         }
 
         function calcularPaso2() {
-            const cafeCapacidad = parseFloat(document.getElementById('cafeCapacidad').value);
             const volumenMaquina = parseFloat(document.getElementById('volumenMaquina').value);
+            const densidadCafe = parseFloat(document.getElementById('densidadCafe').value);
             const porcentajeCisco = parseFloat(document.getElementById('porcentajeCisco').value);
             
+            const cafeCapacidad = volumenMaquina * densidadCafe;
             const cps_final = cafeCapacidad * 0.5;
             const cisco_generado = cps_final * (porcentajeCisco / 100);
             const cisco_total_req = resultados.paso1.m_cisco_total;
@@ -399,13 +451,14 @@
             const porcentaje_cubierto = Math.min(100, (cisco_generado / cisco_total_req) * 100);
             const porcentaje_a_comprar = 100 - porcentaje_cubierto;
 
-            resultados.paso2 = { cafeCapacidad, volumenMaquina, cisco_generado, cisco_a_comprar, porcentaje_a_comprar };
+            resultados.paso2 = { cafeCapacidad, volumenMaquina, densidadCafe, cisco_generado, cisco_a_comprar, porcentaje_a_comprar, cisco_total_req };
 
             document.getElementById('resultados2').innerHTML = `
                 <h4>☕ Resultados del Balance de Biomasa:</h4>
                 <div class="result-highlight">
-                    <strong>Biomasa requerida por el horno:</strong> ${cisco_total_req.toFixed(1)} kg<br>
+                    <strong>Capacidad de la máquina:</strong> ${cafeCapacidad.toFixed(1)} kg de café húmedo (${volumenMaquina} m³ @ ${densidadCafe} kg/m³)<br>
                     <strong>Cisco generado en el proceso de secado:</strong> ${cisco_generado.toFixed(1)} kg<br>
+                    <strong>Biomasa total requerida por el horno:</strong> ${cisco_total_req.toFixed(1)} kg<br>
                     <strong>Porcentaje cubierto con cisco propio:</strong> ${porcentaje_cubierto.toFixed(1)}%<br>
                     <strong style="color:${cisco_a_comprar > 0 ? '#f87171' : '#4ade80'};">Biomasa que se necesita comprar: ${cisco_a_comprar.toFixed(1)} kg (${porcentaje_a_comprar > 0 ? porcentaje_a_comprar.toFixed(1) : '0'}%)</strong>
                 </div>`;
@@ -502,10 +555,15 @@
             const P_m = P_mm / 1000;
             const L_min = 2.65 * Math.sqrt((K * Ac_m2) / (h * P_m));
             resultados.paso5 = { usarAletas: true, L_min };
+            
+            // Auto-llenar el campo en el paso 6
+            document.getElementById('largoAletas').value = L_min.toFixed(2);
+            
             document.getElementById('resultados5').innerHTML = `
                 <h4>📏 Resultados de Aleta Óptima:</h4>
                 <div class="result-highlight">
-                    <strong>Longitud mínima recomendada de aleta:</strong> ${(L_min * 100).toFixed(1)} cm
+                    <strong>Longitud mínima recomendada de aleta:</strong> ${(L_min * 100).toFixed(1)} cm (${L_min.toFixed(2)} m)<br>
+                    <small>Este valor ha sido transferido automáticamente al campo 'Largo Aletas' en el Paso 6.</small>
                 </div>`;
             document.getElementById('resultados5').style.display = 'block';
         }
@@ -546,8 +604,20 @@
             const areaTotal = areaCilindroPrincipal + areaCilindroCiclonico + areaAletas;
             const areaRequerida = resultados.paso4.areaComun;
             const validacionArea = areaTotal >= areaRequerida;
+
+            // Cálculo de material y costo
+            const materialDensity = parseFloat(document.getElementById('materialType').value);
+            const materialSelect = document.getElementById('materialType');
+            const materialName = materialSelect.options[materialSelect.selectedIndex].text;
+            const materialThickness_mm = parseFloat(document.getElementById('materialThickness').value);
+            const materialThickness_m = materialThickness_mm / 1000;
+            const materialPrice = parseFloat(document.getElementById('materialPrice').value);
             
-            resultados.paso6 = { radioPrincipal, alturaPrincipal, radioCiclonico, alturaCiclonico, areaCilindroPrincipal, areaCilindroCiclonico, areaAletas, areaTotal, numAletas, largoAletas, anchoAletas, validacionArea, validacionAletas };
+            const materialVolume = areaTotal * materialThickness_m;
+            const materialWeight = materialVolume * materialDensity;
+            const materialCost = materialWeight * materialPrice;
+            
+            resultados.paso6 = { radioPrincipal, alturaPrincipal, radioCiclonico, alturaCiclonico, areaCilindroPrincipal, areaCilindroCiclonico, areaAletas, areaTotal, numAletas, largoAletas, anchoAletas, validacionArea, validacionAletas, materialName, materialThickness_mm, materialWeight, materialCost };
             
             let isDesignValid = validacionArea && validacionAletas;
             let validationMessageHTML = `
@@ -555,6 +625,11 @@
                 <div class="result-highlight">
                     <strong>ÁREA TOTAL DISEÑADA: ${areaTotal.toFixed(2)} m²</strong> (Requerida: ${areaRequerida.toFixed(2)} m²)
                 </div>
+                 <h4>🔩 Resultados de Material y Costo:</h4>
+                 <div class="result-highlight">
+                    <strong>Peso Aproximado (${materialThickness_mm} mm ${materialName.split('(')[0].trim()}): ${materialWeight.toFixed(1)} kg</strong><br>
+                    <strong>Costo Estimado de Material: $${materialCost.toLocaleString('es-CO', {maximumFractionDigits:0})} COP</strong>
+                 </div>
                 <div class="warning">
                     <p><strong>Validación de Área:</strong> ${validacionArea ? '✅ CUMPLE' : `❌ INSUFICIENTE - Se requieren ${areaRequerida.toFixed(2)} m².`}</p>
                     ${usarAletas ? `<p><strong>Validación de Aletas:</strong> ${validacionAletas ? '✅ ADECUADAS' : `❌ INVÁLIDAS - ${mensajeAletasError}`}</p>` : ''}
@@ -601,7 +676,7 @@
 
             document.getElementById('reporteFinal').innerHTML = `
                 <div class="report-section">
-                    <h3>FICHA TÉCNICA DE DISEÑO: Horno de Biomasa</h3>
+                    <h3>FICHA TÉCNICA DE DISEÑO: Horno de Biomasa (Penagos)</h3>
                     <table class="report-table">
                         <tr><td>Fecha de Cálculo</td><td>${new Date().toLocaleDateString('es-CO')}</td></tr>
                         <tr><td>Tipo de Biomasa</td><td>${r.paso1.biomassType.text.split('(')[0].trim()}</td></tr>
@@ -643,11 +718,13 @@
                 </div>
 
                 <div class="report-section">
-                    <h3>Materiales Sugeridos y Seguridad</h3>
+                    <h3>Materiales, Peso y Costo</h3>
                      <table class="report-table">
-                        <tr><td>Material Estructural</td><td>Acero al Carbono (ej. ASTM A36)</td></tr>
-                        <tr><td>Zonas de Alta Temperatura</td><td>Acero Inoxidable (ej. 304 / 310)</td></tr>
-                        <tr><td>Aislamiento Térmico</td><td>Lana de Roca o Fibra Cerámica (2-4 pulgadas)</td></tr>
+                        <tr><td>Material Estructural</td><td>${r.paso6.materialName.split('(')[0].trim()}</td></tr>
+                        <tr><td>Espesor de Lámina</td><td>${r.paso6.materialThickness_mm} mm</td></tr>
+                        <tr><td>Peso Total Estimado</td><td><strong>${r.paso6.materialWeight.toFixed(1)} kg</strong></td></tr>
+                        <tr><td>Costo Aprox. Material</td><td><strong>$${r.paso6.materialCost.toLocaleString('es-CO', {maximumFractionDigits:0})} COP</strong></td></tr>
+                        <tr><td>Aislamiento Térmico Sugerido</td><td>Lana de Roca o Fibra Cerámica (2-4 pulgadas)</td></tr>
                         <tr><td>Seguridad Esencial</td><td>Chimenea de altura adecuada, control de tiro (damper), puerta con sello hermético.</td></tr>
                      </table>
                 </div>
@@ -675,19 +752,19 @@
                 const pdf = new jsPDF({ orientation: 'p', unit: 'mm', format: 'a4' });
                 
                 const imgProps= pdf.getImageProperties(imgData);
-                const pdfWidth = pdf.internal.pageSize.getWidth();
+                const pdfWidth = pdf.internal.pageSize.getWidth() - 20; // with margin
                 const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
                 
                 let heightLeft = pdfHeight;
-                let position = 0;
+                let position = 10; // top margin
                 
-                pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, pdfHeight);
+                pdf.addImage(imgData, 'PNG', 10, position, pdfWidth, pdfHeight);
                 heightLeft -= pdf.internal.pageSize.getHeight();
 
-                while (heightLeft > 0) {
-                  position -= pdf.internal.pageSize.getHeight();
+                while (heightLeft > -20) { // small tolerance
+                  position = -pdf.internal.pageSize.getHeight() * (Math.abs(heightLeft / pdfHeight) -1) + 10;
                   pdf.addPage();
-                  pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, pdfHeight);
+                  pdf.addImage(imgData, 'PNG', 10, position, pdfWidth, pdfHeight);
                   heightLeft -= pdf.internal.pageSize.getHeight();
                 }
                 
@@ -704,6 +781,7 @@
         }
         
         function reiniciarCalculo() {
+            sessionStorage.removeItem('isLoggedIn');
             location.reload();
         }
     </script>
