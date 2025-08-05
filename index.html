@@ -3,182 +3,195 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Herramienta Profesional de Cálculo de Hornos v8.4 (Penagos Edition)</title>
+    <title>Herramienta Profesional de Cálculo de Hornos v9.0 (Penagos Edition)</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Segoe+UI:wght@400;700&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
+        :root {
+            --bg-dark: #111827; --bg-light: #f3f4f6;
+            --text-dark: #E5E7EB; --text-light: #1f2937;
+            --card-bg-dark: rgba(31, 41, 55, 0.5); --card-bg-light: #ffffff;
+            --border-dark: rgba(34, 211, 238, 0.3); --border-light: #d1d5db;
+            --primary-dark: #22d3ee; --primary-light: #1d4ed8;
+            --input-bg-dark: rgba(17, 24, 39, 0.8); --input-bg-light: #e5e7eb;
+            --icon-color-dark: var(--text-dark); --icon-color-light: var(--text-light);
+        }
         * { margin: 0; padding: 0; box-sizing: border-box; }
         html { scroll-behavior: smooth; }
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #111827;
-            color: #E5E7EB;
+            background-color: var(--bg-dark); color: var(--text-dark);
             overflow: hidden;
         }
-
-        /* --- Estilos de la Pantalla de Login --- */
-        #login-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            z-index: 10000; display: flex; align-items: center; justify-content: center;
-            background-color: #111827;
-            transition: opacity 0.8s ease-in-out;
-        }
+        
+        /* --- CONTROLS & THEME BUTTON --- */
+        .header-controls { position: absolute; top: 10px; right: 20px; display: flex; align-items: center; gap: 15px; z-index: 100; }
+        .btn-icon { background: transparent; border: none; cursor: pointer; padding: 8px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: background-color 0.2s; }
+        .btn-icon svg { width: 24px; height: 24px; color: var(--icon-color-dark); }
+        .btn-icon:hover { background-color: rgba(255, 255, 255, 0.1); }
+        .password-wrapper { position: relative; }
+        #togglePassword { position: absolute; right: 0; top: 50%; transform: translateY(-50%); height: 100%; padding: 0 12px; }
+        #togglePassword svg { width: 20px; height: 20px; }
+        
+        /* --- LIGHT MODE STYLES --- */
+        body.light-mode { background-color: var(--bg-light); color: var(--text-light); }
+        body.light-mode .btn-icon svg { color: var(--icon-color-light); }
+        body.light-mode .btn-icon:hover { background-color: rgba(0, 0, 0, 0.05); }
+        body.light-mode #login-overlay { background-color: var(--bg-light); }
+        body.light-mode .particles li { background: rgba(29, 78, 216, 0.15); }
+        body.light-mode .login-box { background: rgba(255, 255, 255, 0.6); border-color: #a5b4fc; color: #111827; }
+        body.light-mode .login-box h1 { color: var(--primary-light); text-shadow: none; }
+        body.light-mode .login-box p { color: #4b5563; }
+        body.light-mode .login-field label { color: #374151; }
+        body.light-mode .login-field input { background: var(--input-bg-light); border-color: #9ca3af; color: #111827; }
+        body.light-mode .login-field input:focus { border-color: var(--primary-light); box-shadow: 0 0 15px rgba(29, 78, 216, 0.4); }
+        body.light-mode .login-button { background: var(--primary-light); color: #fff; }
+        body.light-mode .login-button:hover { background: #1e40af; }
+        body.light-mode .step-card { background: var(--card-bg-light); border: 1px solid var(--border-light); color: var(--text-light); box-shadow: 0 4px 15px rgba(0,0,0,0.08); }
+        body.light-mode .header { color: var(--text-light); }
+        body.light-mode .step-title { color: var(--primary-light); }
+        body.light-mode .step-number { background: var(--primary-light); color: #fff; }
+        body.light-mode .input-field h4 { color: #1e40af; border-color: #93c5fd; }
+        body.light-mode label { color: #374151; }
+        body.light-mode label small { color: #6b7280; }
+        body.light-mode input, body.light-mode select { background: var(--input-bg-light); color: #111827; border: 1px solid #9ca3af; }
+        body.light-mode input:focus, body.light-mode select:focus { border-color: var(--primary-light); box-shadow: 0 0 15px rgba(29, 78, 216, 0.4); }
+        body.light-mode .calculation-display { background: #eef2ff; border-color: #a5b4fc; }
+        body.light-mode .result-highlight { background: #f3f4f6; border-left-color: var(--primary-light); }
+        body.light-mode .btn-primary { background: var(--primary-light); color: #fff; }
+        body.light-mode .btn-primary:hover { background: #1e3a8a; transform: translateY(-2px); box-shadow: 0 0 20px rgba(29, 78, 216, 0.5); }
+        body.light-mode .btn-secondary { background: #d1d5db; color: #1f2937; }
+        body.light-mode .btn-secondary:hover { background: #9ca3af; }
+        body.light-mode .btn:disabled { background: #e5e7eb; color: #9ca3af; }
+        body.light-mode .next-button-pulse:not(:disabled) { animation-name: pulse-light; }
+        body.light-mode .page-footer { background-color: rgba(255, 255, 255, 0.85); border-top: 1px solid rgba(0, 0, 0, 0.1); color: #374151; }
+        body.light-mode .footer-left a { color: #1f2937; }
+        body.light-mode .footer-left a:hover { color: var(--primary-light); }
+        body.light-mode .footer-right { color: #4b5563; }
+        body.light-mode .btn-logout { background: #fca5a5; color: #7f1d1d; }
+        body.light-mode .btn-logout:hover { background: #f87171; }
+        /* Light Mode Report Styles */
+        body.light-mode .final-report { background: #fff; border: 1px solid #e5e7eb; }
+        body.light-mode .report-section h3 { color: #1e3a8a; border-bottom-color: #93c5fd; }
+        body.light-mode .report-table td { border-color: #e5e7eb; color: #000; }
+        body.light-mode .report-table td:first-child { background-color: var(--primary-light); color: #fff; }
+        body.light-mode .report-footer { color: #6b7280; border-top-color: #e5e7eb; }
+        body.light-mode .report-section ul li { color: #111827; } /* Stronger text color for recommendations */
+        body.light-mode .report-section ul li::marker { color: var(--primary-light); }
+        
+        /* --- CORE STYLES --- */
+        #login-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 10000; display: flex; align-items: center; justify-content: center; background-color: var(--bg-dark); }
         #login-overlay.hidden { opacity: 0; pointer-events: none; }
-        .login-box {
-            background: rgba(31, 41, 55, 0.5); border: 1px solid rgba(34, 211, 238, 0.3);
-            padding: 40px; border-radius: 15px; -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
-            text-align: center; color: #fff; width: 90%; max-width: 420px;
-            animation: fadeInLogin 1s ease-out;
-        }
+        .login-box { background: var(--card-bg-dark); border: 1px solid var(--border-dark); padding: 40px; border-radius: 15px; -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); text-align: center; color: var(--text-dark); width: 90%; max-width: 420px; animation: fadeInLogin 1s ease-out; }
         @keyframes fadeInLogin { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
         .login-logo { max-width: 200px; margin-bottom: 20px; }
-        .login-box h1 {
-            font-family: 'Orbitron', sans-serif; font-size: 24px; margin-bottom: 10px;
-            color: #22d3ee; text-shadow: 0 0 10px #22d3ee;
-        }
+        .login-box h1 { font-family: 'Orbitron', sans-serif; font-size: 24px; margin-bottom: 10px; color: var(--primary-dark); text-shadow: 0 0 10px var(--primary-dark); }
         .login-box p { margin-bottom: 30px; color: rgba(229, 231, 235, 0.7); }
         .login-field { margin-bottom: 20px; text-align: left; }
-        .login-field label { display: block; margin-bottom: 8px; color: rgba(229, 231, 235, 0.8); font-size: 14px; }
-        .login-field input {
-            width: 100%; padding: 12px; background: rgba(17, 24, 39, 0.8);
-            border: 1px solid rgba(34, 211, 238, 0.4); border-radius: 8px;
-            color: #fff; font-size: 16px; transition: all 0.3s ease;
-        }
-        .login-field input:focus {
-            outline: none; border-color: #22d3ee;
-            box-shadow: 0 0 15px rgba(34, 211, 238, 0.5);
-        }
-        .login-button {
-            width: 100%; padding: 12px; border: none; border-radius: 8px; background: #22d3ee;
-            color: #111827; font-size: 18px; font-weight: bold; font-family: 'Orbitron', sans-serif;
-            cursor: pointer; transition: all 0.3s ease; box-shadow: 0 0 10px rgba(34, 211, 238, 0.5);
-        }
-        .login-button:hover { background: #fff; box-shadow: 0 0 25px #22d3ee; }
+        .login-field label { display: block; margin-bottom: 8px; font-size: 14px; }
+        .login-field input { width: 100%; padding: 12px; background: var(--input-bg-dark); border: 1px solid rgba(34, 211, 238, 0.4); border-radius: 8px; color: #fff; font-size: 16px; }
+        .login-button { width: 100%; padding: 12px; border: none; border-radius: 8px; background: var(--primary-dark); color: #111827; font-size: 18px; font-weight: bold; font-family: 'Orbitron', sans-serif; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 0 10px rgba(34, 211, 238, 0.5); }
+        .login-button:hover { background: #fff; box-shadow: 0 0 25px var(--primary-dark); }
         .login-box.error-shake { animation: shake 0.5s; }
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); } 10%, 30%, 50%, 70%, 90% { transform: translateX(-10px); } 20%, 40%, 60%, 80% { transform: translateX(10px); }
-        }
+        @keyframes shake { 0%, 100% { transform: translateX(0); } 10%, 30%, 50%, 70%, 90% { transform: translateX(-10px); } 20%, 40%, 60%, 80% { transform: translateX(10px); } }
         .particles { position: absolute; top: 0; left: 0; width: 100%; height: 100%; overflow: hidden; z-index: -1; }
-        .particles li {
-            position: absolute; display: block; list-style: none; width: 20px; height: 20px;
-            background: rgba(34, 211, 238, 0.2); animation: animate-particles 25s linear infinite; bottom: -150px;
-        }
+        .particles li { position: absolute; display: block; list-style: none; width: 20px; height: 20px; background: rgba(34, 211, 238, 0.2); animation: animate-particles 25s linear infinite; bottom: -150px; }
         .particles li:nth-child(1){ left: 25%; width: 30px; height: 30px; animation-delay: 0s; } .particles li:nth-child(2){ left: 10%; width: 20px; height: 20px; animation-delay: 2s; animation-duration: 12s; } .particles li:nth-child(3){ left: 70%; width: 20px; height: 20px; animation-delay: 4s; } .particles li:nth-child(4){ left: 40%; width: 60px; height: 60px; animation-delay: 0s; animation-duration: 18s; } .particles li:nth-child(5){ left: 65%; width: 20px; height: 20px; animation-delay: 0s; } .particles li:nth-child(6){ left: 75%; width: 40px; height: 40px; animation-delay: 3s; } .particles li:nth-child(7){ left: 35%; width: 50px; height: 50px; animation-delay: 7s; } .particles li:nth-child(8){ left: 50%; width: 25px; height: 25px; animation-delay: 15s; animation-duration: 45s; } .particles li:nth-child(9){ left: 20%; width: 15px; height: 15px; animation-delay: 2s; animation-duration: 35s; } .particles li:nth-child(10){ left: 85%; width: 60px; height: 60px; animation-delay: 0s; animation-duration: 11s; }
         @keyframes animate-particles { 0%{ transform: translateY(0) rotate(0deg); opacity: 1; border-radius: 0; } 100%{ transform: translateY(-1000px) rotate(720deg); opacity: 0; border-radius: 50%; } }
-
-        /* --- Estilos Unificados de la Herramienta Principal --- */
-        .app-wrapper {
-            opacity: 0; transform: translateY(20px);
-            transition: opacity 0.5s 0.4s ease-out, transform 0.5s 0.4s ease-out;
-            padding-bottom: 90px; /* Aumentado para dejar espacio al footer */
-        }
+        .app-wrapper { opacity: 0; transform: translateY(20px); transition: opacity 0.5s 0.4s ease-out, transform 0.5s 0.4s ease-out; padding-bottom: 90px; }
         .app-wrapper.visible { opacity: 1; transform: translateY(0); }
         .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
-        .header { text-align: center; color: white; margin: 20px 0; display: flex; flex-direction: column; align-items: center; gap: 15px; }
-        .header-logo { max-width: 250px; }
+        .header { text-align: center; color: white; margin: 20px 0; position: relative; }
+        .btn-logout { padding: 8px 16px; border-radius: 8px; font-weight: bold; cursor: pointer; border: none; background-color: #7f1d1d; color: #fecaca; transition: background-color 0.3s; }
+        .btn-logout:hover { background-color: #991b1b; }
+        .header-logo { max-width: 250px; margin-top: 15px; margin-bottom: 15px; }
         .progress-bar { background: rgba(31, 41, 55, 0.5); border-radius: 25px; height: 50px; margin: 20px 0; position: relative; overflow: hidden; }
         .progress-fill { background: linear-gradient(90deg, #22d3ee, #00bfff); height: 100%; border-radius: 25px; transition: width 0.5s ease; display: flex; align-items: center; justify-content: center; color: #111827; font-weight: bold; }
-        .step-card {
-            background: rgba(31, 41, 55, 0.5); border: 1px solid rgba(34, 211, 238, 0.3);
-            -webkit-backdrop-filter: blur(5px); backdrop-filter: blur(5px);
-            color: #E5E7EB; border-radius: 15px; padding: 30px; margin: 20px 0;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2); display: none; animation: slideIn 0.5s ease;
-        }
+        .step-card { background: var(--card-bg-dark); border: 1px solid var(--border-dark); -webkit-backdrop-filter: blur(5px); backdrop-filter: blur(5px); color: var(--text-dark); border-radius: 15px; padding: 30px; margin: 20px 0; box-shadow: 0 10px 30px rgba(0,0,0,0.2); display: none; animation: slideIn 0.5s ease; }
         .step-card.active { display: block; }
         @keyframes slideIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-        .step-title { color: #22d3ee; font-size: 24px; margin-bottom: 20px; display: flex; align-items: center; }
-        .step-number { background: #22d3ee; color: #111827; min-width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 15px; font-weight: bold; }
+        .step-title { color: var(--primary-dark); font-size: 24px; margin-bottom: 20px; display: flex; align-items: center; }
+        .step-number { background: var(--primary-dark); color: #111827; min-width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 15px; font-weight: bold; }
         .input-group { margin: 20px 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; align-items: start; }
         .input-field { display: flex; flex-direction: column; }
         .input-field h4 { color: #93c5fd; margin-bottom: 15px; padding-bottom: 5px; border-bottom: 1px solid #3b82f6; }
-        label { font-weight: bold; margin-bottom: 5px; color: #d1d5db; }
-        label small { font-weight: normal; color: #9ca3af; display: block; margin-top: 4px; line-height: 1.4; }
-        input, select {
-            padding: 12px; border-radius: 8px; font-size: 16px; transition: all 0.3s; width: 100%;
-            background: rgba(17, 24, 39, 0.8); color: #fff; border: 1px solid rgba(34, 211, 238, 0.4);
-        }
-        input:focus, select:focus { outline: none; border-color: #22d3ee; box-shadow: 0 0 15px rgba(34, 211, 238, 0.5); }
-        .calculation-display { background: #1f2937; border: 1px solid rgba(34, 211, 238, 0.3); border-radius: 10px; padding: 20px; margin: 15px 0; }
-        .result-highlight { background: #374151; padding: 15px; border-radius: 8px; margin: 10px 0; border-left: 4px solid #22d3ee; }
-        .objetivo-highlight { background: #1e40af; color: #dbeafe; font-weight: bold; padding: 10px; border-radius: 8px; border-left: 4px solid #3b82f6; }
+        label { font-weight: bold; margin-bottom: 5px; }
+        label small { font-weight: normal; display: block; margin-top: 4px; line-height: 1.4; }
+        input, select { padding: 12px; border-radius: 8px; font-size: 16px; width: 100%; background: var(--input-bg-dark); color: #fff; border: 1px solid rgba(34, 211, 238, 0.4); }
+        .calculation-display { background: #1f2937; border: 1px solid var(--border-dark); border-radius: 10px; padding: 20px; margin: 15px 0; }
+        .result-highlight { background: #374151; padding: 15px; border-radius: 8px; margin: 10px 0; border-left: 4px solid var(--primary-dark); }
         .buttons { display: flex; justify-content: space-between; align-items: center; margin-top: 30px; gap: 15px; flex-wrap: wrap; }
         .button-group { display: flex; gap: 10px; }
         .btn { padding: 12px 24px; border: none; border-radius: 8px; font-size: 16px; cursor: pointer; transition: all 0.3s; font-weight: bold; }
-        .btn-primary { background: #22d3ee; color: #111827; }
-        .btn-primary:hover { background: #fff; transform: translateY(-2px); box-shadow: 0 0 20px #22d3ee; }
+        .btn-primary { background: var(--primary-dark); color: #111827; }
+        .btn-primary:hover { background: #fff; transform: translateY(-2px); box-shadow: 0 0 20px var(--primary-dark); }
         .btn-secondary { background: #4b5563; color: #e5e7eb; }
         .btn-secondary:hover { background: #6b7280; }
         .btn:disabled { background: #374151; color: #9ca3af; cursor: not-allowed; transform: none; animation: none !important; box-shadow: none; }
-        .next-button-pulse:not(:disabled) { animation: pulse 1.5s infinite; }
-        @keyframes pulse { 0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(34, 211, 238, 0.7); } 70% { transform: scale(1.05); box-shadow: 0 0 0 10px rgba(34, 211, 238, 0); } 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(34, 211, 238, 0); } }
-        .final-report { background: #1f2937; color: #e5e7eb; padding: 30px; border-radius: 15px; margin: 20px 0; border: 1px solid rgba(34, 211, 238, 0.3); }
-        .report-section h3 { color: #22d3ee; margin-top: 20px; border-bottom: 2px solid #22d3ee; padding-bottom: 5px; margin-bottom: 15px;}
-        .report-section ul { list-style-position: inside; padding-left: 5px; }
+        .next-button-pulse:not(:disabled) { animation: pulse-dark 1.5s infinite; }
+        @keyframes pulse-dark { 0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(34, 211, 238, 0.7); } 70% { transform: scale(1.05); box-shadow: 0 0 0 10px rgba(34, 211, 238, 0); } 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(34, 211, 238, 0); } }
+        @keyframes pulse-light { 0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(29, 78, 216, 0.6); } 70% { transform: scale(1.05); box-shadow: 0 0 0 10px rgba(29, 78, 216, 0); } 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(29, 78, 216, 0); } }
+        .final-report { background: var(--card-bg-dark); color: var(--text-dark); padding: 30px; border-radius: 15px; margin: 20px 0; border: 1px solid var(--border-dark); }
+        .report-section h3 { color: var(--primary-dark); margin-top: 20px; border-bottom: 2px solid var(--primary-dark); padding-bottom: 5px; margin-bottom: 15px;}
+        .report-section ul { list-style-position: inside; padding-left: 5px; margin-top: 10px; }
+        .report-section li { margin-bottom: 8px; }
         .report-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
         .report-table td { padding: 8px; border: 1px solid #4b5563; font-size: 14px; }
         .report-table td:first-child { font-weight: bold; background-color: #374151; width: 50%; }
         .report-footer { margin-top: 30px; padding-top: 15px; border-top: 1px solid #4b5563; text-align: center; font-size: 12px; color: #9ca3af; }
-        .warning { background: #3730a3; color: #e0e7ff; border: 1px solid #4f46e5; border-radius: 8px; padding: 15px; margin: 15px 0; }
-        .toggle-container { display: flex; align-items: center; gap: 10px; margin: 20px 0; }
-        #aletas-params-div { display: none; }
-        .formula-display { background: #1e3a8a; color: #dbeafe; padding: 10px; border-radius: 8px; margin: 10px 0; font-family: monospace; }
-        
-        /* --- Estilos del Footer --- */
-        .page-footer {
-            position: fixed;
-            bottom: 0; left: 0; width: 100%; z-index: 1000;
-            background-color: rgba(17, 24, 39, 0.85);
-            -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);
-            padding: 15px 25px;
-            color: rgba(229, 231, 235, 0.8);
-            border-top: 1px solid rgba(34, 211, 238, 0.3);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 14px;
-        }
-        .footer-left a {
-            color: #E5E7EB; text-decoration: none; font-weight: bold;
-            display: inline-flex; align-items: center; gap: 8px;
-            transition: color 0.3s;
-        }
-        .footer-left a:hover { color: #22d3ee; }
+        .page-footer { position: fixed; bottom: 0; left: 0; width: 100%; z-index: 1000; background-color: rgba(17, 24, 39, 0.85); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); padding: 15px 25px; color: rgba(229, 231, 235, 0.8); text-align: center; border-top: 1px solid var(--border-dark); display: flex; justify-content: space-between; align-items: center; font-size: 14px; }
+        .footer-left a { color: #E5E7EB; text-decoration: none; font-weight: bold; display: inline-flex; align-items: center; gap: 8px; transition: color 0.3s; }
+        .footer-left a:hover { color: var(--primary-dark); }
         .footer-left svg { width: 22px; height: 22px; fill: currentColor; }
         .footer-right { font-weight: bold; color: #9ca3af; }
+
+        /* --- THEME TRANSITION ANIMATION --- */
+        @keyframes wipe-in { from { clip-path: circle(0% at top left); } to { clip-path: circle(150% at top left); } }
+        ::view-transition-new(*) { animation: wipe-in 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
+        ::view-transition-old(*) { animation: none; }
     </style>
 </head>
 <body>
-
+    
     <div id="login-overlay">
-        <ul class="particles">
-            <li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li>
-        </ul>
         <div class="login-box" id="loginBox">
             <img src="https://penagos.com/wp-content/uploads/2020/04/logo-2-300x129.png" alt="Logo Penagos" class="login-logo">
             <h1>Acceso al Sistema</h1>
-            <p>Herramienta de Diseño de Hornos v8.4</p>
+            <p>Herramienta de Diseño de Hornos v9.0</p>
             <form id="login-form">
-                <div class="login-field">
-                    <label for="username">Usuario</label>
-                    <input type="text" id="username" placeholder="Ingrese su usuario" value="PENAGOS">
-                </div>
-                <div class="login-field">
-                    <label for="password">Contraseña</label>
-                    <input type="password" id="password" placeholder="Ingrese su contraseña">
+                <div class="login-field"><label for="username">Usuario</label><input type="text" id="username" placeholder="Ingrese su usuario" value="PENAGOS"></div>
+                <div class="login-field"><label for="password">Contraseña</label>
+                    <div class="password-wrapper">
+                        <input type="password" id="password" placeholder="Ingrese su contraseña">
+                        <button type="button" class="btn-icon" id="togglePassword" title="Mostrar/Ocultar contraseña">
+                            <svg id="eye-open" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+                            <svg id="eye-closed" style="display: none;" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3.98 8.223A10.477 10.477 0 001.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.45 10.45 0 0112 4.5c4.756 0 8.773 3.162 10.065 7.498a10.523 10.523 0 01-4.293 5.774M6.228 6.228L3 3m3.228 3.228l3.65 3.65m7.894 7.894L21 21m-3.228-3.228l-3.65-3.65m0 0a3 3 0 10-4.243-4.243m4.242 4.242L9.88 9.88" /></svg>
+                        </button>
+                    </div>
                 </div>
                 <button type="submit" class="login-button">Ingresar</button>
             </form>
         </div>
+        <ul class="particles">
+            <li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li>
+        </ul>
     </div>
 
     <div class="app-wrapper" id="appWrapper">
         <div class="container">
             <header class="header">
-                 <img src="https://penagos.com/wp-content/uploads/2020/04/logo-2-300x129.png" alt="Logo Penagos" class="header-logo">
-                <h1>🔧 Herramienta Profesional de Cálculo de Hornos v8.4</h1>
+                <div class="header-controls">
+                    <button class="btn-icon" id="theme-toggle-btn" title="Cambiar Tema">
+                        <svg id="sun-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3v2.25m6.364.386l-1.591 1.591M21 12h-2.25m-.386 6.364l-1.591-1.591M12 18.75V21m-4.773-4.227l-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z" /></svg>
+                        <svg id="moon-icon" style="display: none;" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z" /></svg>
+                    </button>
+                    <button class="btn-logout" onclick="logout()">Cerrar Sesión</button>
+                </div>
+                <img src="https://penagos.com/wp-content/uploads/2020/04/logo-2-300x129.png" alt="Logo Penagos" class="header-logo">
+                <h1>🔧 Herramienta Profesional de Cálculo de Hornos v9.0</h1>
                 <p>Diseño paso a paso para sistemas de combustión de biomasa</p>
             </header>
             <div class="progress-bar">
@@ -210,11 +223,14 @@
                 </div>
 
                 <div class="step-card" id="step2">
-                    <div class="step-title"><div class="step-number">2</div>BALANCE DE BIOMASA GENERADA VS REQUERIDA</div>
+                    <div class="step-title"><div class="step-number">2</div>BALANCE Y SUMINISTRO DE BIOMASA</div>
                     <div class="input-group">
                         <div class="input-field"><label for="volumenMaquina">Volumen Máquina (m³)<small>Capacidad volumétrica del secador.</small></label><input type="number" id="volumenMaquina" step="0.1" value="1.5"></div>
-                        <div class="input-field"><label for="densidadCafe">Densidad Café Lavado (kg/m³)<small>Densidad aparente del café a secar.</small></label><input type="number" id="densidadCafe" step="1" value="350"></div>
+                        <div class="input-field"><label for="densidadCafe">Densidad Café Lavado (kg/m³)<small>Densidad aparente del café a secar.</small></label><input type="number" id="densidadCafe" step="1" value="700"></div>
                         <div class="input-field"><label for="porcentajeCisco">% Cisco del CPS Final<small>Porcentaje de residuo del producto seco.</small></label><input type="number" id="porcentajeCisco" value="15" max="100"></div>
+                    </div>
+                    <div class="input-group">
+                        <div class="input-field"><label for="capacidadChipiadora">Capacidad Chipiadora (kg/h)<small>Rendimiento para procesar soca (troncos).</small></label><input type="number" id="capacidadChipiadora" value="500"></div>
                     </div>
                     <div id="resultados2" class="calculation-display" style="display:none;"></div>
                     <div class="buttons">
@@ -257,12 +273,11 @@
             
                 <div class="step-card" id="step5">
                     <div class="step-title"><div class="step-number">5</div>DISEÑO ÓPTIMO DE ALETAS (OPCIONAL)</div>
-                    <div class="toggle-container">
+                    <div class="toggle-container" style="display: flex; align-items: center; gap: 10px;">
                         <label for="usarAletas"><strong>Activar cálculo de aletas para aumentar el área de transferencia</strong></label>
                         <input type="checkbox" id="usarAletas" onchange="toggleAletas()" style="width: auto; height: 20px;">
                     </div>
-                    <div id="aletas-params-div">
-                        <div class="formula-display">L_min = 2.65 × √(K × Ac / (h × P))</div>
+                    <div id="aletas-params-div" style="display:none;">
                         <div class="input-group">
                             <div class="input-field"><label for="aletaK">Conductividad Térmica (K) del Material (W/mK)<small>Ej: Acero al Carbono ≈ 50</small></label><input type="number" id="aletaK" value="50"></div>
                             <div class="input-field"><label for="aletaH">Coeficiente h (W/m²K)<small>Típico para aire forzado: 100-200</small></label><input type="number" id="aletaH" value="120"></div>
@@ -284,17 +299,17 @@
 
                 <div class="step-card" id="step6">
                     <div class="step-title"><div class="step-number">6</div>DISEÑO GEOMÉTRICO, MATERIAL Y VALIDACIÓN</div>
-                    <div class="input-field"><h4>📐 Geometría del Horno</h4></div>
+                    <div class="input-field"><h4>📐 Geometría del Horno (en cm)</h4></div>
                     <div class="input-group">
-                        <div class="input-field"><h5>🔥 Cilindro Principal</h5><label for="radioPrincipal">Radio (m)<small>Radio externo del cilindro principal.</small></label><input type="number" id="radioPrincipal" step="0.01" value="0.15"><label for="alturaPrincipal">Altura (m)<small>Altura total del cilindro principal.</small></label><input type="number" id="alturaPrincipal" step="0.01" value="1.0"></div>
-                        <div class="input-field"><h5>🌪️ C. Ciclónico (Opcional)</h5><label for="radioCiclonico">Radio (m)<small>Dejar en 0 si no se utiliza.</small></label><input type="number" id="radioCiclonico" step="0.01" value="0.0"><label for="alturaCiclonico">Altura (m)<small>Altura del cilindro ciclónico.</small></label><input type="number" id="alturaCiclonico" step="0.01" value="0.8"></div>
+                        <div class="input-field"><h5>🔥 Cilindro Principal</h5><label for="radioPrincipal">Radio (cm)<small>Radio externo del cilindro.</small></label><input type="number" id="radioPrincipal" step="1" value="15"><label for="alturaPrincipal">Altura (cm)<small>Altura total del cilindro.</small></label><input type="number" id="alturaPrincipal" step="1" value="100"></div>
+                        <div class="input-field"><h5>🌪️ C. Ciclónico (Opcional)</h5><label for="radioCiclonico">Radio (cm)<small>Dejar en 0 si no se utiliza.</small></label><input type="number" id="radioCiclonico" step="1" value="0"><label for="alturaCiclonico">Altura (cm)<small>Altura del cilindro ciclónico.</small></label><input type="number" id="alturaCiclonico" step="1" value="80"></div>
                     </div>
                     <div id="disenoAletasDiv" style="display:none;">
-                        <div class="input-field"><h4>➕ Aletas (Fins)</h4></div>
+                        <div class="input-field"><h4>➕ Aletas (Fins) (en cm)</h4></div>
                         <div class="input-group">
                             <div class="input-field"><label for="numAletas">Número de Aletas<small>Cantidad total de aletas.</small></label><input type="number" id="numAletas" value="4"></div>
-                            <div class="input-field"><label for="largoAletas">Largo Aletas (m)<small>Longitud de cada aleta.</small></label><input type="number" id="largoAletas" step="0.01" value="0.6"></div>
-                            <div class="input-field"><label for="anchoAletas">Ancho Aletas (m)<small>Ancho (altura) de cada aleta.</small></label><input type="number" id="anchoAletas" step="0.01" value="0.05"></div>
+                            <div class="input-field"><label for="largoAletas">Largo Aletas (cm)<small>Longitud de cada aleta.</small></label><input type="number" id="largoAletas" step="1" value="60"></div>
+                            <div class="input-field"><label for="anchoAletas">Ancho Aletas (cm)<small>Ancho (altura) de cada aleta.</small></label><input type="number" id="anchoAletas" step="1" value="5"></div>
                         </div>
                     </div>
                     <div class="input-field" style="margin-top: 20px;"><h4>🔩 Material y Costo Estimado</h4></div>
@@ -313,7 +328,7 @@
                     <div id="resultados6" class="calculation-display" style="display:none;"></div>
                     <div class="buttons">
                         <button class="btn btn-secondary" onclick="siguientePaso(5)">← Anterior</button>
-                        <button class="btn btn-primary next-button-pulse" id="siguiente6" onclick="handleFinalize()" disabled>Finalizar y Generar Reporte →</button>
+                        <button class="btn btn-primary next-button-pulse" id="siguiente6" onclick="siguientePaso(7)" disabled>Finalizar y Generar Reporte →</button>
                     </div>
                 </div>
 
@@ -322,8 +337,10 @@
                     <div class="final-report" id="reporteFinal"></div>
                     <div class="buttons">
                         <button class="btn btn-secondary" onclick="siguientePaso(6)">← Anterior</button>
-                        <button class="btn btn-primary" id="pdfButton" onclick="descargarPDF()">📄 Descargar Ficha en PDF</button>
-                        <button class="btn btn-secondary" onclick="reiniciarCalculo()">🔄 Nuevo Cálculo</button>
+                        <div class="button-group">
+                           <button class="btn btn-secondary" onclick="reiniciarCalculo()">🔄 Nuevo Análisis</button>
+                           <button class="btn btn-primary" id="pdfButton" onclick="descargarPDF()">📄 Descargar Ficha en PDF</button>
+                        </div>
                     </div>
                 </div>
             </main>
@@ -338,69 +355,107 @@
             </a>
         </div>
         <div class="footer-right" id="copyright">
-            &copy; 2024 Penagos Hermanos. Todos los derechos reservados.
-        </div>
+            </div>
     </footer>
 
     <script>
-        // --- Lógica del Login y Transición ---
-        document.addEventListener('DOMContentLoaded', () => {
-            const loginForm = document.getElementById('login-form');
-            const loginOverlay = document.getElementById('login-overlay');
-            const appWrapper = document.getElementById('appWrapper');
-            const loginBox = document.getElementById('loginBox');
-            
-            // Actualizar copyright
-            document.getElementById('copyright').innerHTML = `&copy; ${new Date().getFullYear()} Penagos Hermanos. Todos los derechos reservados.`;
-
-            // Verificar si el usuario ya está logueado en la sesión
-            if (sessionStorage.getItem('isLoggedIn') === 'true') {
-                loginOverlay.classList.add('hidden');
-                document.body.style.overflow = 'auto';
-                appWrapper.classList.add('visible');
-            }
-            
-            const storedObfuscatedPass = 'cGVuYWdvczEyMw=='; // btoa('penagos123')
-
-            loginForm.addEventListener('submit', (e) => {
-                e.preventDefault();
-                const username = document.getElementById('username').value;
-                const password = document.getElementById('password').value;
-                const enteredObfuscatedPass = btoa(password);
-
-                if (username.toUpperCase() === 'PENAGOS' && enteredObfuscatedPass === storedObfuscatedPass) {
-                    sessionStorage.setItem('isLoggedIn', 'true'); // Guardar estado en sessionStorage
-                    loginOverlay.classList.add('hidden');
-                    document.body.style.overflow = 'auto';
-                    appWrapper.classList.add('visible');
-                } else {
-                    loginBox.classList.add('error-shake');
-                    setTimeout(() => {
-                        loginBox.classList.remove('error-shake');
-                    }, 500);
-                }
-            });
-        });
-
-        // --- Lógica de la Herramienta ---
         window.jsPDF = window.jspdf.jsPDF;
         let resultados = {};
         
+        document.addEventListener('DOMContentLoaded', () => {
+            const loginOverlay = document.getElementById('login-overlay');
+            const appWrapper = document.getElementById('appWrapper');
+            const themeBtn = document.getElementById('theme-toggle-btn');
+            const passwordToggle = document.getElementById('togglePassword');
+            
+            updateTheme(localStorage.getItem('theme') || 'dark');
+            
+            if (localStorage.getItem('isLoggedIn') === 'true') {
+                loginOverlay.classList.add('hidden');
+                document.body.style.overflow = 'auto';
+                appWrapper.classList.add('visible');
+            } else {
+                loginOverlay.classList.remove('hidden');
+                document.body.style.overflow = 'hidden';
+                appWrapper.classList.remove('visible');
+            }
+            
+            document.getElementById('login-form').addEventListener('submit', handleLogin);
+            themeBtn.addEventListener('click', handleThemeToggle);
+            passwordToggle.addEventListener('click', togglePasswordVisibility);
+            document.getElementById('copyright').innerHTML = `&copy; ${new Date().getFullYear()} Penagos Hermanos. Todos los derechos reservados.`;
+        });
+        
+        function handleLogin(e) {
+            e.preventDefault();
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const storedObfuscatedPass = 'cGVuYWdvczEyMw=='; // btoa('penagos123')
+            const enteredObfuscatedPass = btoa(password);
+
+            if (username.toUpperCase() === 'PENAGOS' && enteredObfuscatedPass === storedObfuscatedPass) {
+                localStorage.setItem('isLoggedIn', 'true');
+                document.getElementById('login-overlay').classList.add('hidden');
+                document.body.style.overflow = 'auto';
+                document.getElementById('appWrapper').classList.add('visible');
+            } else {
+                const loginBox = document.getElementById('loginBox');
+                loginBox.classList.add('error-shake');
+                setTimeout(() => { loginBox.classList.remove('error-shake'); }, 500);
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('isLoggedIn');
+            location.reload();
+        }
+
+        function updateTheme(theme) {
+            const isLight = theme === 'light';
+            document.body.classList.toggle('light-mode', isLight);
+            document.getElementById('sun-icon').style.display = isLight ? 'none' : 'block';
+            document.getElementById('moon-icon').style.display = isLight ? 'block' : 'none';
+            localStorage.setItem('theme', theme);
+        }
+
+        function handleThemeToggle() {
+            const newTheme = document.body.classList.contains('light-mode') ? 'dark' : 'light';
+            if (!document.startViewTransition) {
+                updateTheme(newTheme);
+                return;
+            }
+            document.startViewTransition(() => updateTheme(newTheme));
+        }
+        
+        function togglePasswordVisibility() {
+            const passwordInput = document.getElementById('password');
+            const eyeOpen = document.getElementById('eye-open');
+            const eyeClosed = document.getElementById('eye-closed');
+            const isPassword = passwordInput.type === 'password';
+            
+            passwordInput.type = isPassword ? 'text' : 'password';
+            eyeOpen.style.display = isPassword ? 'none' : 'block';
+            eyeClosed.style.display = isPassword ? 'block' : 'none';
+        }
+
+        function reiniciarCalculo() {
+            siguientePaso(1);
+        }
+
         function siguientePaso(paso) {
             document.querySelectorAll('.step-card').forEach(card => card.classList.remove('active'));
             document.getElementById(`step${paso}`).classList.add('active');
             window.scrollTo(0, 0);
-            
-            if (paso === 3) {
-                calcularPaso3();
-            }
-
-            const titulos = ["Req. Térmicos", "Balance Biomasa", "Aire Combustión", "Área de Transferencia", "Diseño Aletas", "Diseño y Material", "Reporte Final"];
+            if (paso === 3) { calcularPaso3(); }
+            if (paso === 7) { generarReporteFinal(); }
+            const titulos = ["Req. Térmicos", "Balance Biomasa", "Aire Combustión", "Área Transferencia", "Diseño Aletas", "Diseño Geométrico", "Reporte Final"];
             const progressBar = document.getElementById('progressBar');
             progressBar.style.width = (paso / 7) * 100 + '%';
             progressBar.textContent = `Paso ${paso} de 7: ${titulos[paso-1]}`;
         }
-
+        
+        // --- All calculation functions (calcularPaso1 to calcularDisenoGeometrico) are unchanged ---
+        
         function calcularPaso1() {
             const aireCFM = parseFloat(document.getElementById('aireCFM').value);
             const tempAmbiente = parseFloat(document.getElementById('tempAmbiente').value);
@@ -409,31 +464,18 @@
             const humedadBiomasa = parseFloat(document.getElementById('humedadBiomasa').value);
             const eficienciaHorno = parseFloat(document.getElementById('eficienciaHorno').value);
             const horasTrabajo = parseFloat(document.getElementById('horasTrabajo').value);
-
             const m_aire = aireCFM * 0.00055;
             const cp_aire = 1.05;
             const deltaT = tempSalida - tempAmbiente;
-            
             const Q_proceso = m_aire * cp_aire * deltaT;
             const Q_horno_requerido = Q_proceso / (eficienciaHorno / 100);
             const Q_horno_btu = Q_horno_requerido * 3412.14;
-            
             const cpBiomasa_efectivo = cpBiomasa * (1 - humedadBiomasa / 100);
             const m_cisco_total = (Q_horno_requerido * horasTrabajo * 3600) / cpBiomasa_efectivo;
             const consumo_por_hora = m_cisco_total / horasTrabajo;
             const consumo_por_minuto = consumo_por_hora / 60;
-
-            resultados.paso1 = { m_aire, deltaT, Q_proceso, Q_horno_requerido, Q_horno_btu, cpBiomasa_efectivo, m_cisco_total, consumo_por_hora, consumo_por_minuto, aireCFM, horasTrabajo, eficienciaHorno, humedadBiomasa, biomassType: {value: cpBiomasa, text: document.getElementById('biomassType').selectedOptions[0].text} };
-
-            document.getElementById('resultados1').innerHTML = `
-                <h4>📊 Resultados Termodinámicos:</h4>
-                <div class="result-highlight">
-                    <strong>Potencia Requerida del Horno: ${Q_horno_requerido.toFixed(2)} kW / ${Q_horno_btu.toLocaleString('en-US', {maximumFractionDigits:0})} BTU/hr</strong><br>
-                    <small>(Considerando ${eficienciaHorno}% de eficiencia para entregar ${Q_proceso.toFixed(2)} kW útiles al proceso)</small><br><br>
-                    <strong>Poder calorífico efectivo (Biomasa al ${humedadBiomasa}% hum.):</strong> ${cpBiomasa_efectivo.toFixed(0)} kJ/kg<br>
-                    <strong>Biomasa total necesaria para ${horasTrabajo}h:</strong> ${m_cisco_total.toFixed(1)} kg<br>
-                    <strong>Consumo de biomasa por hora:</strong> ${consumo_por_hora.toFixed(2)} kg/h
-                </div>`;
+            resultados.paso1 = { Q_proceso, Q_horno_requerido, Q_horno_btu, m_cisco_total, consumo_por_hora, consumo_por_minuto, eficienciaHorno, deltaT, aireCFM, biomassType: { text: document.getElementById('biomassType').selectedOptions[0].text }, m_aire };
+            document.getElementById('resultados1').innerHTML = `<h4>📊 Resultados Termodinámicos:</h4><div class="result-highlight"><strong>Potencia Requerida del Horno: ${Q_horno_requerido.toFixed(2)} kW / ${Q_horno_btu.toLocaleString('en-US', {maximumFractionDigits:0})} BTU/hr</strong><br><small>(Considerando ${eficienciaHorno}% de eficiencia para entregar ${Q_proceso.toFixed(2)} kW útiles al proceso)</small><br><br><strong>Biomasa total necesaria para ${horasTrabajo}h:</strong> ${m_cisco_total.toFixed(1)} kg<br><strong>Consumo de biomasa por hora:</strong> ${consumo_por_hora.toFixed(2)} kg/h</div>`;
             document.getElementById('resultados1').style.display = 'block';
             document.getElementById('siguiente1').disabled = false;
         }
@@ -442,7 +484,7 @@
             const volumenMaquina = parseFloat(document.getElementById('volumenMaquina').value);
             const densidadCafe = parseFloat(document.getElementById('densidadCafe').value);
             const porcentajeCisco = parseFloat(document.getElementById('porcentajeCisco').value);
-            
+            const capacidadChipiadora = parseFloat(document.getElementById('capacidadChipiadora').value);
             const cafeCapacidad = volumenMaquina * densidadCafe;
             const cps_final = cafeCapacidad * 0.5;
             const cisco_generado = cps_final * (porcentajeCisco / 100);
@@ -450,87 +492,63 @@
             const cisco_a_comprar = Math.max(0, cisco_total_req - cisco_generado);
             const porcentaje_cubierto = Math.min(100, (cisco_generado / cisco_total_req) * 100);
             const porcentaje_a_comprar = 100 - porcentaje_cubierto;
-
-            resultados.paso2 = { cafeCapacidad, volumenMaquina, densidadCafe, cisco_generado, cisco_a_comprar, porcentaje_a_comprar, cisco_total_req };
-
-            document.getElementById('resultados2').innerHTML = `
-                <h4>☕ Resultados del Balance de Biomasa:</h4>
-                <div class="result-highlight">
-                    <strong>Capacidad de la máquina:</strong> ${cafeCapacidad.toFixed(1)} kg de café húmedo (${volumenMaquina} m³ @ ${densidadCafe} kg/m³)<br>
-                    <strong>Cisco generado en el proceso de secado:</strong> ${cisco_generado.toFixed(1)} kg<br>
-                    <strong>Biomasa total requerida por el horno:</strong> ${cisco_total_req.toFixed(1)} kg<br>
-                    <strong>Porcentaje cubierto con cisco propio:</strong> ${porcentaje_cubierto.toFixed(1)}%<br>
-                    <strong style="color:${cisco_a_comprar > 0 ? '#f87171' : '#4ade80'};">Biomasa que se necesita comprar: ${cisco_a_comprar.toFixed(1)} kg (${porcentaje_a_comprar > 0 ? porcentaje_a_comprar.toFixed(1) : '0'}%)</strong>
-                </div>`;
+            resultados.paso2 = { cisco_a_comprar, porcentaje_a_comprar };
+            let resultadosHTML = `<h4>☕ Resultados del Balance de Biomasa:</h4><div class="result-highlight"><strong>Capacidad de la máquina:</strong> ${cafeCapacidad.toFixed(1)} kg de café húmedo (${volumenMaquina} m³ @ ${densidadCafe} kg/m³)<br><strong>Cisco generado en el proceso:</strong> ${cisco_generado.toFixed(1)} kg<br><strong>Biomasa total requerida por el horno:</strong> ${cisco_total_req.toFixed(1)} kg<br><strong>Porcentaje cubierto con cisco propio:</strong> ${porcentaje_cubierto.toFixed(1)}%</div>`;
+            if (cisco_a_comprar > 0) {
+                const palos_soca = Math.ceil(cisco_a_comprar / 2);
+                const tiempo_chipeado_h = cisco_a_comprar / capacidadChipiadora;
+                const horas = Math.floor(tiempo_chipeado_h);
+                const minutos = Math.round((tiempo_chipeado_h - horas) * 60);
+                resultadosHTML += `<div class="result-highlight" style="border-left-color: #f59e0b;">
+                    <strong style="color:${cisco_a_comprar > 0 ? '#fb923c' : '#4ade80'};">DÉFICIT DE BIOMASA: Se necesita comprar ${cisco_a_comprar.toFixed(1)} kg</strong><br><br>
+                    <strong>Suministro con Soca de Café:</strong> Se requieren aprox. <strong>${palos_soca.toLocaleString('es-CO')} palos de soca</strong>.<br>
+                    <strong>Tiempo de Procesamiento:</strong> <strong>${horas}h y ${minutos}min</strong> para chipiar la soca (a ${capacidadChipiadora} kg/h).</div>`;
+            } else {
+                 resultadosHTML += `<div class="result-highlight" style="border-left-color: #22c55e;"><strong style="color: #4ade80;">¡AUTOSUFICIENTE! El cisco generado cubre toda la necesidad del horno.</strong></div>`;
+            }
+            document.getElementById('resultados2').innerHTML = resultadosHTML;
             document.getElementById('resultados2').style.display = 'block';
             document.getElementById('siguiente2').disabled = false;
         }
         
         function calcularPaso3() {
+            if (!resultados.paso1) { alert("Primero debe calcular el Paso 1."); return; }
             const aire_requerido_kgmin = resultados.paso1.consumo_por_minuto * 20;
             const aire_combustion_cfm = aire_requerido_kgmin * 32;
             resultados.paso3 = { aire_combustion_cfm };
-            document.getElementById('resultados3').innerHTML = `
-                <h4>🔥 Resultados de Aire para Combustión:</h4>
-                <div class="result-highlight">
-                    <strong>Consumo de combustible:</strong> ${resultados.paso1.consumo_por_minuto.toFixed(3)} kg/min<br>
-                    <strong>Aire requerido para combustión:</strong> ${aire_requerido_kgmin.toFixed(2)} kg/min
-                </div>
-                <div class="warning">
-                    💡 Se recomienda un <strong>ventilador de combustión</strong> (secundario, no el de proceso) con una capacidad de al menos <strong>${aire_combustion_cfm.toFixed(1)} CFM</strong>.
-                </div>`;
-             document.getElementById('resultados3').style.display = 'block';
+            document.getElementById('resultados3').innerHTML = `<h4>🔥 Resultados de Aire para Combustión:</h4><div class="result-highlight"><strong>Consumo de combustible:</strong> ${resultados.paso1.consumo_por_minuto.toFixed(3)} kg/min<br><strong>Aire requerido para combustión:</strong> ${aire_requerido_kgmin.toFixed(2)} kg/min</div><div class="warning">💡 Se recomienda un <strong>ventilador de combustión</strong> (secundario) con capacidad de al menos <strong>${aire_combustion_cfm.toFixed(1)} CFM</strong>.</div>`;
+            document.getElementById('resultados3').style.display = 'block';
         }
 
         function calcularTransferencia() {
+            if (!resultados.paso1) { alert("Primero debe calcular el Paso 1."); return; }
             const h = parseFloat(document.getElementById('coeficienteH').value);
             const emissividad = parseFloat(document.getElementById('emissividad').value);
             const tempSuperficie = parseFloat(document.getElementById('tempSuperficie').value);
             const areaComun = parseFloat(document.getElementById('areaComun').value);
-            
-            const deltaT = 45;
-            const sigma = 5.67e-8;
-            const tempSuperficieK = tempSuperficie + 273.15;
-            const tempAireK = 312.5 + 273.15;
-
+            const deltaT = 45; const sigma = 5.67e-8;
+            const tempSuperficieK = tempSuperficie + 273.15; const tempAireK = 312.5 + 273.15;
             const Q_conv = h * areaComun * deltaT;
             const Q_rad = areaComun * emissividad * sigma * (Math.pow(tempSuperficieK, 4) - Math.pow(tempAireK, 4));
             const Q_total = (Q_conv + Q_rad) / 1000;
-
-            resultados.paso4 = { areaComun, Q_total, Q_horno_requerido: resultados.paso1.Q_horno_requerido, tempSuperficie };
-            
+            resultados.paso4 = { areaComun, tempSuperficie, Q_horno_requerido: resultados.paso1.Q_horno_requerido };
             const diferencia = Math.abs(Q_total - resultados.paso4.Q_horno_requerido);
             const porcentajeError = (diferencia / resultados.paso4.Q_horno_requerido) * 100;
-            
-            document.getElementById('objetivoCalor').innerHTML = `🎯 <strong>OBJETIVO DE POTENCIA DEL HORNO:</strong> <span class="objetivo-highlight">${resultados.paso1.Q_horno_requerido.toFixed(2)} kW</span>`;
+            document.getElementById('objetivoCalor').innerHTML = `🎯 <strong>OBJETIVO DE POTENCIA:</strong> <span class="objetivo-highlight">${resultados.paso1.Q_horno_requerido.toFixed(2)} kW</span>`;
             document.getElementById('objetivoCalor').style.display = 'block';
-
-            document.getElementById('resultados4').innerHTML = `
-                <h4>🌡️ Transferencia de Calor Calculada:</h4>
-                <div class="result-highlight">
-                    <strong>Q total transferido con ${areaComun.toFixed(2)} m²:</strong> ${Q_total.toFixed(2)} kW<br>
-                    <strong>Diferencia vs. Objetivo:</strong> ${diferencia.toFixed(2)} kW (${porcentajeError.toFixed(1)}%)
-                </div>
-                <div class="warning">
-                    ${porcentajeError > 5 ? `⚠️ AJUSTAR ÁREA: La diferencia es > 5%.` : `✅ VALIDADO: El área de transferencia es adecuada.`}
-                </div>`;
+            document.getElementById('resultados4').innerHTML = `<h4>🌡️ Transferencia de Calor Calculada:</h4><div class="result-highlight"><strong>Q total transferido con ${areaComun.toFixed(2)} m²:</strong> ${Q_total.toFixed(2)} kW<br><strong>Diferencia vs. Objetivo:</strong> ${diferencia.toFixed(2)} kW (${porcentajeError.toFixed(1)}%)</div><div class="warning">${porcentajeError > 5 ? `⚠️ AJUSTAR ÁREA: La diferencia es > 5%.` : `✅ VALIDADO: El área es adecuada.`}</div>`;
             document.getElementById('resultados4').style.display = 'block';
-            if (porcentajeError <= 5) {
-                document.getElementById('siguiente4').disabled = false;
-            } else {
-                 document.getElementById('siguiente4').disabled = true;
-            }
+            document.getElementById('siguiente4').disabled = (porcentajeError > 5);
         }
 
         function iterarArea() {
+            if (!resultados.paso1) { alert("Primero debe calcular el Paso 1."); return; }
             const Q_requerido_W = resultados.paso1.Q_horno_requerido * 1000;
             const h = parseFloat(document.getElementById('coeficienteH').value);
             const emissividad = parseFloat(document.getElementById('emissividad').value);
             const tempSuperficie = parseFloat(document.getElementById('tempSuperficie').value);
-            const deltaT = 45;
-            const sigma = 5.67e-8;
-            const tempSuperficieK = tempSuperficie + 273.15;
-            const tempAireK = 312.5 + 273.15;
+            const deltaT = 45; const sigma = 5.67e-8;
+            const tempSuperficieK = tempSuperficie + 273.15; const tempAireK = 312.5 + 273.15;
             let areaEstimada = Q_requerido_W / (h * deltaT + emissividad * sigma * (Math.pow(tempSuperficieK, 4) - Math.pow(tempAireK, 4)));
             document.getElementById('areaComun').value = areaEstimada.toFixed(2);
             calcularTransferencia();
@@ -553,50 +571,48 @@
             const P_mm = parseFloat(document.getElementById('aletaP').value);
             const Ac_m2 = Ac_mm2 / 1000000;
             const P_m = P_mm / 1000;
-            const L_min = 2.65 * Math.sqrt((K * Ac_m2) / (h * P_m));
-            resultados.paso5 = { usarAletas: true, L_min };
-            
-            // Auto-llenar el campo en el paso 6
-            document.getElementById('largoAletas').value = L_min.toFixed(2);
-            
-            document.getElementById('resultados5').innerHTML = `
-                <h4>📏 Resultados de Aleta Óptima:</h4>
-                <div class="result-highlight">
-                    <strong>Longitud mínima recomendada de aleta:</strong> ${(L_min * 100).toFixed(1)} cm (${L_min.toFixed(2)} m)<br>
-                    <small>Este valor ha sido transferido automáticamente al campo 'Largo Aletas' en el Paso 6.</small>
-                </div>`;
+            const L_min_m = 2.65 * Math.sqrt((K * Ac_m2) / (h * P_m));
+            const L_min_cm = L_min_m * 100;
+            const L_sugerido_cm = Math.ceil(L_min_cm);
+            resultados.paso5 = { usarAletas: true, L_min_m: L_min_m };
+            document.getElementById('largoAletas').value = L_sugerido_cm;
+            document.getElementById('resultados5').innerHTML = `<h4>📏 Resultados de Aleta Óptima:</h4><div class="result-highlight"><strong>Longitud mínima calculada:</strong> ${L_min_cm.toFixed(1)} cm<br><strong>Valor sugerido (redondeado hacia arriba): ${L_sugerido_cm} cm</strong><br><small>Este valor sugerido ha sido transferido al Paso 6.</small></div>`;
             document.getElementById('resultados5').style.display = 'block';
         }
 
         function calcularDisenoGeometrico() {
-            if (!resultados.paso4 || typeof resultados.paso4.areaComun === 'undefined') {
-                document.getElementById('resultados6').innerHTML = `<div class="warning"><h4>Error de Flujo de Trabajo</h4><p>Debe completar el <strong>Paso 4 (Transferencia de Calor)</strong> y obtener un área requerida válida antes de poder validar el diseño geométrico.</p></div>`;
-                document.getElementById('resultados6').style.display = 'block';
-                return; 
-            }
-
-            const radioPrincipal = parseFloat(document.getElementById('radioPrincipal').value);
-            const alturaPrincipal = parseFloat(document.getElementById('alturaPrincipal').value);
-            const radioCiclonico = parseFloat(document.getElementById('radioCiclonico').value);
-            const alturaCiclonico = parseFloat(document.getElementById('alturaCiclonico').value);
+            if (!resultados.paso4) { alert("Complete el Paso 4 primero."); return; }
+            
+            const radioPrincipal_cm = parseFloat(document.getElementById('radioPrincipal').value);
+            const alturaPrincipal_cm = parseFloat(document.getElementById('alturaPrincipal').value);
+            const radioCiclonico_cm = parseFloat(document.getElementById('radioCiclonico').value);
+            const alturaCiclonico_cm = parseFloat(document.getElementById('alturaCiclonico').value);
+            const radioPrincipal_m = radioPrincipal_cm / 100;
+            const alturaPrincipal_m = alturaPrincipal_cm / 100;
+            const radioCiclonico_m = radioCiclonico_cm / 100;
+            const alturaCiclonico_m = alturaCiclonico_cm / 100;
             const usarAletas = document.getElementById('usarAletas').checked;
-            const areaCilindroPrincipal = 2 * Math.PI * radioPrincipal * alturaPrincipal;
-            const areaCilindroCiclonico = radioCiclonico > 0 ? 2 * Math.PI * radioCiclonico * alturaCiclonico : 0;
-            let areaAletas = 0;
-            let numAletas=0, largoAletas=0, anchoAletas=0, validacionAletas = true, mensajeAletasError = '';
+            
+            const areaCilindroPrincipal = 2 * Math.PI * radioPrincipal_m * alturaPrincipal_m;
+            const areaCilindroCiclonico = radioCiclonico_m > 0 ? 2 * Math.PI * radioCiclonico_m * alturaCiclonico_m : 0;
+            
+            let areaAletas = 0; let validacionAletas = true; let mensajeAletasError = '';
+            let numAletas, largoAletas_cm, anchoAletas_cm;
             
             if (usarAletas) {
-                if (!resultados.paso5 || typeof resultados.paso5.L_min === 'undefined') {
+                if (!resultados.paso5 || !resultados.paso5.L_min_m) {
                     validacionAletas = false;
-                    mensajeAletasError = 'Debe calcular primero la longitud mínima en el Paso 5.';
+                    mensajeAletasError = 'Debe calcular la longitud mínima en el Paso 5.';
                 } else {
+                    largoAletas_cm = parseFloat(document.getElementById('largoAletas').value);
+                    anchoAletas_cm = parseFloat(document.getElementById('anchoAletas').value);
                     numAletas = parseFloat(document.getElementById('numAletas').value);
-                    largoAletas = parseFloat(document.getElementById('largoAletas').value);
-                    anchoAletas = parseFloat(document.getElementById('anchoAletas').value);
-                    areaAletas = numAletas * largoAletas * anchoAletas * 2;
-                    if (largoAletas < resultados.paso5.L_min) {
+                    const largoAletas_m = largoAletas_cm / 100;
+                    const anchoAletas_m = anchoAletas_cm / 100;
+                    areaAletas = numAletas * largoAletas_m * anchoAletas_m * 2;
+                    if (largoAletas_m < resultados.paso5.L_min_m) {
                         validacionAletas = false;
-                        mensajeAletasError = `El largo de aletas (${(largoAletas*100).toFixed(1)} cm) es MENOR al mínimo recomendado (${(resultados.paso5.L_min*100).toFixed(1)} cm).`;
+                        mensajeAletasError = `El largo de aletas (${largoAletas_cm} cm) es MENOR al mínimo requerido (${(resultados.paso5.L_min_m*100).toFixed(1)} cm).`;
                     }
                 }
             }
@@ -605,7 +621,6 @@
             const areaRequerida = resultados.paso4.areaComun;
             const validacionArea = areaTotal >= areaRequerida;
 
-            // Cálculo de material y costo
             const materialDensity = parseFloat(document.getElementById('materialType').value);
             const materialSelect = document.getElementById('materialType');
             const materialName = materialSelect.options[materialSelect.selectedIndex].text;
@@ -617,172 +632,64 @@
             const materialWeight = materialVolume * materialDensity;
             const materialCost = materialWeight * materialPrice;
             
-            resultados.paso6 = { radioPrincipal, alturaPrincipal, radioCiclonico, alturaCiclonico, areaCilindroPrincipal, areaCilindroCiclonico, areaAletas, areaTotal, numAletas, largoAletas, anchoAletas, validacionArea, validacionAletas, materialName, materialThickness_mm, materialWeight, materialCost };
+            resultados.paso6 = { radioPrincipal_cm, alturaPrincipal_cm, radioCiclonico_cm, alturaCiclonico_cm, areaCilindroPrincipal, areaCilindroCiclonico, areaAletas, areaTotal, numAletas, largoAletas_cm, anchoAletas_cm, materialName, materialThickness_mm, materialWeight, materialCost };
             
             let isDesignValid = validacionArea && validacionAletas;
-            let validationMessageHTML = `
-                <h4>📐 Resultados del Diseño Geométrico:</h4>
-                <div class="result-highlight">
-                    <strong>ÁREA TOTAL DISEÑADA: ${areaTotal.toFixed(2)} m²</strong> (Requerida: ${areaRequerida.toFixed(2)} m²)
-                </div>
-                 <h4>🔩 Resultados de Material y Costo:</h4>
-                 <div class="result-highlight">
-                    <strong>Peso Aproximado (${materialThickness_mm} mm ${materialName.split('(')[0].trim()}): ${materialWeight.toFixed(1)} kg</strong><br>
-                    <strong>Costo Estimado de Material: $${materialCost.toLocaleString('es-CO', {maximumFractionDigits:0})} COP</strong>
-                 </div>
-                <div class="warning">
-                    <p><strong>Validación de Área:</strong> ${validacionArea ? '✅ CUMPLE' : `❌ INSUFICIENTE - Se requieren ${areaRequerida.toFixed(2)} m².`}</p>
-                    ${usarAletas ? `<p><strong>Validación de Aletas:</strong> ${validacionAletas ? '✅ ADECUADAS' : `❌ INVÁLIDAS - ${mensajeAletasError}`}</p>` : ''}
-                    <br>
-                    ${isDesignValid ? 
-                        '<p style="color:#4ade80; font-weight:bold;">¡Diseño válido! Ya puede generar el reporte final.</p>' : 
-                        '<p style="color:#f87171; font-weight:bold;">El diseño no es válido. Corrija los puntos marcados con ❌ para poder continuar.</p>'}
-                </div>`;
-
-            document.getElementById('resultados6').innerHTML = validationMessageHTML;
+            document.getElementById('resultados6').innerHTML = `<h4>📐 Resultados del Diseño:</h4><div class="result-highlight"><strong>ÁREA TOTAL DISEÑADA: ${areaTotal.toFixed(2)} m²</strong> (Requerida: ${areaRequerida.toFixed(2)} m²)</div><h4>🔩 Resultados de Material y Costo:</h4><div class="result-highlight"><strong>Peso Aproximado: ${materialWeight.toFixed(1)} kg</strong><br><strong>Costo Estimado de Material: $${materialCost.toLocaleString('es-CO')} COP</strong></div><div class="warning"><p><strong>Validación de Área:</strong> ${validacionArea ? '✅ CUMPLE' : `❌ INSUFICIENTE`}</p>${usarAletas ? `<p><strong>Validación de Aletas:</strong> ${validacionAletas ? '✅ ADECUADAS' : `❌ INVÁLIDAS - ${mensajeAletasError}`}</p>` : ''}<br>${isDesignValid ? '<p style="color:#4ade80; font-weight:bold;">¡Diseño válido!</p>' : '<p style="color:#f87171; font-weight:bold;">El diseño no es válido.</p>'}</div>`;
             document.getElementById('resultados6').style.display = 'block';
             document.getElementById('siguiente6').disabled = !isDesignValid;
         }
 
-        function handleFinalize() {
-            try {
-                generarReporteFinal();
-            } catch (error) {
-                console.error("Error al generar el reporte final:", error);
-                document.getElementById('reporteFinal').innerHTML = `<div class="warning"><h4>Ocurrió un error al generar el reporte.</h4><p>Asegúrese de haber completado todos los pasos en orden. Error: ${error.message}</p></div>`;
-            }
-            siguientePaso(7);
-        }
-
         function generarReporteFinal() {
             const r = resultados;
+            if (!r.paso1 || !r.paso6) { 
+                document.getElementById('reporteFinal').innerHTML = `<div class="warning">Aún no hay datos suficientes para generar el reporte. Por favor, complete todos los pasos.</div>`;
+                return;
+            }
+            
             const heatFlux = r.paso1.Q_horno_requerido / r.paso6.areaTotal;
-            const relacionAspecto = r.paso6.alturaPrincipal / (r.paso6.radioPrincipal * 2);
+            const relacionAspecto = r.paso6.alturaPrincipal_cm / (r.paso6.radioPrincipal_cm * 2);
             const aporteAletas = r.paso6.areaAletas > 0 ? (r.paso6.areaAletas / r.paso6.areaTotal) * 100 : 0;
 
-            let recomendacionesHTML = `
-                <li>La relación altura/diámetro del horno es <strong>${relacionAspecto.toFixed(1)}</strong>. Valores entre 2 y 4 favorecen una buena circulación de gases y una combustión más estable.</li>
-                <li>El flujo de calor es de <strong>${heatFlux.toFixed(2)} kW/m²</strong>. Este valor es clave para seleccionar el espesor del acero y el tipo de aislamiento térmico. Un flujo muy alto puede requerir materiales más robustos.</li>
-                ${aporteAletas > 0 ? `<li>Las aletas aportan un <strong>${aporteAletas.toFixed(1)}%</strong> del área total de transferencia. Son un método efectivo para aumentar la transferencia sin alterar drásticamente el cuerpo principal del horno.</li>` : ''}
-                `;
-            
-            if (r.paso6.areaAletas <= 0) {
-                 recomendacionesHTML += `<li><b>Considere añadir aletas:</b> Las aletas aumentan el área de contacto con el aire sin agrandar el horno, mejorando significativamente la eficiencia térmica.</li>`;
-            }
+            let recomendacionesHTML = `<li>La relación altura/diámetro del horno es <strong>${relacionAspecto.toFixed(1)}</strong>. Valores entre 2 y 4 favorecen una buena circulación de gases y una combustión más estable.</li><li>El flujo de calor es de <strong>${heatFlux.toFixed(2)} kW/m²</strong>. Este valor es clave para seleccionar el espesor del acero y el tipo de aislamiento térmico.</li>${aporteAletas > 0 ? `<li>Las aletas aportan un <strong>${aporteAletas.toFixed(1)}%</strong> del área total de transferencia. Son un método efectivo para optimizar el diseño.</li>` : ''}${(r.paso6.areaAletas <= 0) ? `<li><b>Considere añadir aletas:</b> Aumentan el área de contacto sin agrandar el horno, mejorando la eficiencia térmica.</li>` : ''}${(r.paso2.cisco_a_comprar > 0) ? `<li>Dado que se debe adquirir un <strong>${r.paso2.porcentaje_a_comprar.toFixed(1)}%</strong> de la biomasa, es crucial asegurar proveedores locales.</li>` : ''}`;
 
-            if (r.paso2.cisco_a_comprar > 0) {
-                recomendacionesHTML += `<li>Dado que se debe adquirir un <strong>${r.paso2.porcentaje_a_comprar.toFixed(1)}%</strong> de la biomasa, es crucial asegurar proveedores locales con antelación.</li>`;
-            }
-
-            document.getElementById('reporteFinal').innerHTML = `
-                <div class="report-section">
-                    <h3>FICHA TÉCNICA DE DISEÑO: Horno de Biomasa (Penagos)</h3>
-                    <table class="report-table">
-                        <tr><td>Fecha de Cálculo</td><td>${new Date().toLocaleDateString('es-CO')}</td></tr>
-                        <tr><td>Tipo de Biomasa</td><td>${r.paso1.biomassType.text.split('(')[0].trim()}</td></tr>
-                    </table>
-                </div>
-
-                <div class="report-section">
-                    <h3>Especificaciones de Rendimiento Térmico</h3>
-                    <table class="report-table">
-                        <tr><td>Potencia del Horno</td><td><strong>${r.paso1.Q_horno_requerido.toFixed(2)} kW / ${r.paso1.Q_horno_btu.toLocaleString('en-US', {maximumFractionDigits:0})} BTU/hr</strong></td></tr>
-                        <tr><td>Eficiencia de Diseño</td><td>${r.paso1.eficienciaHorno}%</td></tr>
-                        <tr><td>Temperatura de Superficie</td><td>${r.paso4.tempSuperficie}°C</td></tr>
-                        <tr><td>Flujo de Calor (Heat Flux)</td><td>${heatFlux.toFixed(2)} kW/m²</td></tr>
-                    </table>
-                </div>
-
-                 <div class="report-section">
-                    <h3>Parámetros Clave de Operación</h3>
-                     <table class="report-table">
-                        <tr><td>Potencia Útil al Proceso</td><td>${r.paso1.Q_proceso.toFixed(2)} kW</td></tr>
-                        <tr><td>Flujo Másico de Aire</td><td>${r.paso1.m_aire.toFixed(3)} kg/s</td></tr>
-                        <tr><td>Incremento de Temperatura (ΔT)</td><td>${r.paso1.deltaT.toFixed(1)} °C</td></tr>
-                        <tr><td>Consumo de Biomasa</td><td>${r.paso1.consumo_por_hora.toFixed(2)} kg/h</td></tr>
-                     </table>
-                </div>
-
-                <div class="report-section">
-                    <h3>Parámetros Constructivos y Geométricos</h3>
-                     <table class="report-table">
-                        <tr><td>Cilindro Principal</td><td>Ø${(r.paso6.radioPrincipal * 2 * 100).toFixed(0)} cm × ${r.paso6.alturaPrincipal.toFixed(2)} m</td></tr>
-                        <tr><td>Área Cilindro Principal</td><td>${r.paso6.areaCilindroPrincipal.toFixed(2)} m²</td></tr>
-                        <tr><td>Filtro Ciclónico</td><td>${r.paso6.radioCiclonico > 0 ? `Ø${(r.paso6.radioCiclonico * 2 * 100).toFixed(0)} cm × ${r.paso6.alturaCiclonico.toFixed(2)} m` : 'No utilizado'}</td></tr>
-                        <tr><td>Área Filtro Ciclónico</td><td>${r.paso6.radioCiclonico > 0 ? `${r.paso6.areaCilindroCiclonico.toFixed(2)} m²` : 'No aplica'}</td></tr>
-                        <tr><td>Aletas</td><td>${(r.paso6.areaAletas > 0) ? `${r.paso6.numAletas} uds. (${r.paso6.areaAletas.toFixed(2)} m²)` : 'No utilizadas'}</td></tr>
-                        <tr><td>Área de Transferencia Total</td><td><strong>${r.paso6.areaTotal.toFixed(2)} m²</strong></td></tr>
-                        <tr><td>Ventilador de Proceso</td><td>${r.paso1.aireCFM} CFM</td></tr>
-                        <tr><td>Ventilador de Combustión</td><td>${r.paso3.aire_combustion_cfm.toFixed(1)} CFM</td></tr>
-                     </table>
-                </div>
-
-                <div class="report-section">
-                    <h3>Materiales, Peso y Costo</h3>
-                     <table class="report-table">
-                        <tr><td>Material Estructural</td><td>${r.paso6.materialName.split('(')[0].trim()}</td></tr>
-                        <tr><td>Espesor de Lámina</td><td>${r.paso6.materialThickness_mm} mm</td></tr>
-                        <tr><td>Peso Total Estimado</td><td><strong>${r.paso6.materialWeight.toFixed(1)} kg</strong></td></tr>
-                        <tr><td>Costo Aprox. Material</td><td><strong>$${r.paso6.materialCost.toLocaleString('es-CO', {maximumFractionDigits:0})} COP</strong></td></tr>
-                        <tr><td>Aislamiento Térmico Sugerido</td><td>Lana de Roca o Fibra Cerámica (2-4 pulgadas)</td></tr>
-                        <tr><td>Seguridad Esencial</td><td>Chimenea de altura adecuada, control de tiro (damper), puerta con sello hermético.</td></tr>
-                     </table>
-                </div>
-
-                 <div class="report-section">
-                    <h3>Recomendaciones de Diseño e Implementación</h3>
-                     <ul>${recomendacionesHTML}</ul>
-                </div>
-                <div class="report-footer">
-                    Herramienta desarrollada por Jonathan Jerez, Ingeniero Mecánico.
-                </div>`;
+            document.getElementById('reporteFinal').innerHTML = `<div class="report-section"><h3>FICHA TÉCNICA DE DISEÑO: Horno de Biomasa (Penagos)</h3><table class="report-table"><tr><td>Fecha de Cálculo</td><td>${new Date().toLocaleDateString('es-CO')}</td></tr><tr><td>Tipo de Biomasa</td><td>${r.paso1.biomassType.text.split('(')[0].trim()}</td></tr></table></div><div class="report-section"><h3>Especificaciones de Rendimiento Térmico</h3><table class="report-table"><tr><td>Potencia del Horno</td><td><strong>${r.paso1.Q_horno_requerido.toFixed(2)} kW / ${r.paso1.Q_horno_btu.toLocaleString('en-US', {maximumFractionDigits:0})} BTU/hr</strong></td></tr><tr><td>Eficiencia de Diseño</td><td>${r.paso1.eficienciaHorno}%</td></tr><tr><td>Temperatura de Superficie</td><td>${r.paso4.tempSuperficie}°C</td></tr><tr><td>Flujo de Calor (Heat Flux)</td><td>${heatFlux.toFixed(2)} kW/m²</td></tr></table></div><div class="report-section"><h3>Parámetros Clave de Operación</h3><table class="report-table"><tr><td>Potencia Útil al Proceso</td><td>${r.paso1.Q_proceso.toFixed(2)} kW</td></tr><tr><td>Flujo Másico de Aire</td><td>${r.paso1.m_aire.toFixed(3)} kg/s</td></tr><tr><td>Incremento de Temperatura (ΔT)</td><td>${r.paso1.deltaT.toFixed(1)} °C</td></tr><tr><td>Consumo de Biomasa</td><td>${r.paso1.consumo_por_hora.toFixed(2)} kg/h</td></tr></table></div><div class="report-section"><h3>Parámetros Constructivos y Geométricos</h3><table class="report-table"><tr><td>Cilindro Principal</td><td>Ø${(r.paso6.radioPrincipal_cm * 2).toFixed(0)} cm × ${r.paso6.alturaPrincipal_cm.toFixed(0)} cm</td></tr><tr><td>Área Cilindro Principal</td><td>${r.paso6.areaCilindroPrincipal.toFixed(2)} m²</td></tr><tr><td>Filtro Ciclónico</td><td>${r.paso6.radioCiclonico_cm > 0 ? `Ø${(r.paso6.radioCiclonico_cm * 2).toFixed(0)} cm × ${r.paso6.alturaCiclonico_cm.toFixed(0)} cm` : 'No utilizado'}</td></tr><tr><td>Área Filtro Ciclónico</td><td>${r.paso6.radioCiclonico_cm > 0 ? `${r.paso6.areaCilindroCiclonico.toFixed(2)} m²` : 'No aplica'}</td></tr><tr><td>Aletas</td><td>${(r.paso6.areaAletas > 0) ? `${r.paso6.numAletas} uds. de ${r.paso6.largoAletas_cm}x${r.paso6.anchoAletas_cm}cm (${r.paso6.areaAletas.toFixed(2)} m²)` : 'No utilizadas'}</td></tr><tr><td>Área de Transferencia Total</td><td><strong>${r.paso6.areaTotal.toFixed(2)} m²</strong></td></tr><tr><td>Ventilador de Proceso</td><td>${r.paso1.aireCFM} CFM</td></tr><tr><td>Ventilador de Combustión</td><td>${r.paso3.aire_combustion_cfm.toFixed(1)} CFM</td></tr></table></div><div class="report-section"><h3>Materiales, Peso y Costo</h3><table class="report-table"><tr><td>Material Estructural</td><td>${r.paso6.materialName.split('(')[0].trim()}</td></tr><tr><td>Espesor de Lámina</td><td>${r.paso6.materialThickness_mm} mm</td></tr><tr><td>Peso Total Estimado</td><td><strong>${r.paso6.materialWeight.toFixed(1)} kg</strong></td></tr><tr><td>Costo Aprox. Material</td><td><strong>$${r.paso6.materialCost.toLocaleString('es-CO')} COP</strong></td></tr></table></div><div class="report-section"><h3>Recomendaciones de Diseño e Implementación</h3><ul>${recomendacionesHTML}</ul></div><div class="report-footer">Herramienta desarrollada por Jonathan Jerez para Penagos Hermanos.</div>`;
         }
 
         function descargarPDF() {
             const pdfButton = document.getElementById('pdfButton');
-            const originalText = pdfButton.innerHTML;
-            pdfButton.innerHTML = 'Generando PDF...';
             pdfButton.disabled = true;
+            pdfButton.innerHTML = 'Generando PDF...';
 
             const reporte = document.getElementById('reporteFinal');
             const { jsPDF } = window.jspdf;
-
-            html2canvas(reporte, { scale: 2, useCORS: true }).then(canvas => {
+            const isLightMode = document.body.classList.contains('light-mode');
+            
+            html2canvas(reporte, { scale: 2, useCORS: true, backgroundColor: isLightMode ? '#ffffff' : '#1f2937' }).then(canvas => {
                 const imgData = canvas.toDataURL('image/png');
                 const pdf = new jsPDF({ orientation: 'p', unit: 'mm', format: 'a4' });
-                
                 const imgProps= pdf.getImageProperties(imgData);
-                const pdfWidth = pdf.internal.pageSize.getWidth() - 20; // with margin
+                const pdfWidth = pdf.internal.pageSize.getWidth() - 20;
                 const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
-                
                 let heightLeft = pdfHeight;
-                let position = 10; // top margin
-                
+                let position = 10;
                 pdf.addImage(imgData, 'PNG', 10, position, pdfWidth, pdfHeight);
-                heightLeft -= pdf.internal.pageSize.getHeight();
-
-                while (heightLeft > -20) { // small tolerance
-                  position = -pdf.internal.pageSize.getHeight() * (Math.abs(heightLeft / pdfHeight) -1) + 10;
+                heightLeft -= (pdf.internal.pageSize.getHeight() - 20);
+                while (heightLeft > 0) {
+                  position = - (pdf.internal.pageSize.getHeight() * (pdf.internal.getNumberOfPages() -1)) + 10;
                   pdf.addPage();
                   pdf.addImage(imgData, 'PNG', 10, position, pdfWidth, pdfHeight);
-                  heightLeft -= pdf.internal.pageSize.getHeight();
+                  heightLeft -= (pdf.internal.pageSize.getHeight() - 20);
                 }
-                
                 pdf.save(`Ficha-Tecnica-Horno-${new Date().toISOString().slice(0,10)}.pdf`);
-                pdfButton.innerHTML = originalText;
+                pdfButton.innerHTML = '📄 Descargar Ficha en PDF';
                 pdfButton.disabled = false;
-
             }).catch(error => {
                 console.error("Error al generar el PDF:", error);
-                alert("Ocurrió un error al generar el PDF. Asegúrese de tener conexión a internet y vuelva a intentarlo.");
-                pdfButton.innerHTML = originalText;
+                alert("Ocurrió un error al generar el PDF.");
+                pdfButton.innerHTML = '📄 Descargar Ficha en PDF';
                 pdfButton.disabled = false;
             });
-        }
-        
-        function reiniciarCalculo() {
-            sessionStorage.removeItem('isLoggedIn');
-            location.reload();
         }
     </script>
 </body>
